@@ -19,9 +19,9 @@ class RoleMiddleware
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  $role  Role yang diizinkan (misal: 'admin')
+    * @param  string  ...$roles  Role yang diizinkan (misal: 'admin', 'petugas')
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         // Pastikan user sudah login
         if (!Auth::check()) {
@@ -29,9 +29,8 @@ class RoleMiddleware
         }
 
         // Cek apakah role user cocok dengan role yang disyaratkan
-        if (Auth::user()->role !== $role) {
-            // Jika tidak cocok, arahkan ke dashboard publik atau tampilkan 403
-            abort(403, 'Akses Ditolak. Anda tidak memiliki izin (role: ' . $role . ') untuk halaman ini.');
+        if (!in_array(Auth::user()->role, $roles, true)) {
+            abort(403, 'Akses ditolak. Role yang diizinkan: ' . implode(', ', $roles) . '.');
         }
 
         return $next($request);
