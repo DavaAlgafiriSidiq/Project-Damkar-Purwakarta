@@ -7,14 +7,14 @@
     <div class="d-flex flex-wrap flex-stack pb-7">
         <div class="d-flex flex-column justify-content-center my-1">
             <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
-                Input Laporan Kejadian Lapangan
+                Edit Laporan Kejadian Lapangan #{{ $laporan->id }}
             </h1>
             <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                 <li class="breadcrumb-item text-muted">
                     <a href="{{ route('petugas.kejadian.index') }}" class="text-muted text-hover-primary">Petugas Lapangan</a>
                 </li>
                 <li class="breadcrumb-item"><span class="bullet bg-gray-400 w-5px h-2px"></span></li>
-                <li class="breadcrumb-item text-dark">Form Input Baru</li>
+                <li class="breadcrumb-item text-dark">Edit Laporan #{{ $laporan->id }}</li>
             </ul>
         </div>
         <div class="d-flex align-items-center gap-2 gap-lg-3">
@@ -43,13 +43,14 @@
         </div>
     @endif
 
-    {{-- Form Input Kejadian --}}
-    <form action="{{ route('petugas.kejadian.store') }}" method="POST" id="formInputKejadian">
+    {{-- Form Edit Kejadian --}}
+    <form action="{{ route('petugas.kejadian.update', $laporan->id) }}" method="POST" id="formEditKejadian">
         @csrf
+        @method('PUT')
 
         <div class="row g-7">
             
-            {{-- Kolom Kiri: Klasifikasi & Lokasi --}}
+            {{-- Kolom Kiri: Klasifikasi, Lokasi & Korban --}}
             <div class="col-lg-7">
                 <div class="card card-flush shadow-sm mb-7">
                     <div class="card-header pt-6">
@@ -65,10 +66,10 @@
                             <label class="required form-label fw-semibold fs-6">Jenis Layanan Operasi</label>
                             <div class="row g-4">
                                 <div class="col-6">
-                                    <label class="btn btn-outline btn-outline-dashed btn-active-light-danger d-flex flex-stack text-start p-4 w-100 {{ old('jenis_layanan', 'darurat') === 'darurat' ? 'active' : '' }}" id="labelLayananDarurat">
+                                    <label class="btn btn-outline btn-outline-dashed btn-active-light-danger d-flex flex-stack text-start p-4 w-100 {{ old('jenis_layanan', $laporan->jenis_layanan) === 'darurat' ? 'active' : '' }}" id="labelLayananDarurat">
                                         <div class="d-flex align-items-center me-2">
                                             <div class="form-check form-check-custom form-check-solid form-check-danger me-3">
-                                                <input class="form-check-input" type="radio" name="jenis_layanan" value="darurat" id="layananDarurat" {{ old('jenis_layanan', 'darurat') === 'darurat' ? 'checked' : '' }} onchange="sinkronisasiJenisLayanan()" />
+                                                <input class="form-check-input" type="radio" name="jenis_layanan" value="darurat" id="layananDarurat" {{ old('jenis_layanan', $laporan->jenis_layanan) === 'darurat' ? 'checked' : '' }} onchange="sinkronisasiJenisLayanan()" />
                                             </div>
                                             <div class="flex-grow-1">
                                                 <h4 class="d-flex align-items-center fs-6 fw-bold mb-0 text-danger">
@@ -81,10 +82,10 @@
                                     </label>
                                 </div>
                                 <div class="col-6">
-                                    <label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-4 w-100 {{ old('jenis_layanan') === 'non_darurat' ? 'active' : '' }}" id="labelLayananRescue">
+                                    <label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-4 w-100 {{ old('jenis_layanan', $laporan->jenis_layanan) === 'non_darurat' ? 'active' : '' }}" id="labelLayananRescue">
                                         <div class="d-flex align-items-center me-2">
                                             <div class="form-check form-check-custom form-check-solid form-check-primary me-3">
-                                                <input class="form-check-input" type="radio" name="jenis_layanan" value="non_darurat" id="layananRescue" {{ old('jenis_layanan') === 'non_darurat' ? 'checked' : '' }} onchange="sinkronisasiJenisLayanan()" />
+                                                <input class="form-check-input" type="radio" name="jenis_layanan" value="non_darurat" id="layananRescue" {{ old('jenis_layanan', $laporan->jenis_layanan) === 'non_darurat' ? 'checked' : '' }} onchange="sinkronisasiJenisLayanan()" />
                                             </div>
                                             <div class="flex-grow-1">
                                                 <h4 class="d-flex align-items-center fs-6 fw-bold mb-0 text-primary">
@@ -105,16 +106,16 @@
                                 <label class="required form-label fw-semibold fs-6">Tanggal & Waktu Mulai</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-0"><i class="ki-duotone ki-calendar fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i></span>
-                                    <input type="datetime-local" name="tanggal_waktu_kejadian" class="form-control form-control-solid @error('tanggal_waktu_kejadian') is-invalid @enderror" value="{{ old('tanggal_waktu_kejadian', now()->format('Y-m-d\TH:i')) }}" required />
+                                    <input type="datetime-local" name="tanggal_waktu_kejadian" class="form-control form-control-solid @error('tanggal_waktu_kejadian') is-invalid @enderror" value="{{ old('tanggal_waktu_kejadian', $laporan->tanggal_waktu_kejadian ? \Carbon\Carbon::parse($laporan->tanggal_waktu_kejadian)->format('Y-m-d\TH:i') : '') }}" required />
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="required form-label fw-semibold fs-6">Status Operasi Lapangan</label>
                                 <select name="status_operasi" id="selectStatusOperasi" class="form-select form-select-solid @error('status_operasi') is-invalid @enderror" required onchange="handleStatusOperasiChange()">
-                                    <option value="dalam_penanganan" {{ old('status_operasi', 'dalam_penanganan') === 'dalam_penanganan' ? 'selected' : '' }}>
+                                    <option value="dalam_penanganan" {{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'dalam_penanganan' ? 'selected' : '' }}>
                                         🟡 Sedang Dalam Penanganan
                                     </option>
-                                    <option value="selesai" {{ old('status_operasi') === 'selesai' ? 'selected' : '' }}>
+                                    <option value="selesai" {{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'selesai' ? 'selected' : '' }}>
                                         🟢 Selesai (Padam / Tertangani)
                                     </option>
                                 </select>
@@ -122,11 +123,11 @@
                         </div>
 
                         {{-- Waktu Penanganan Selesai --}}
-                        <div class="mb-6" id="wrapperWaktuSelesai" style="{{ old('status_operasi', 'dalam_penanganan') === 'selesai' ? '' : 'display: none;' }}">
+                        <div class="mb-6" id="wrapperWaktuSelesai" style="{{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'selesai' ? '' : 'display: none;' }}">
                             <label class="form-label fw-semibold fs-6 text-success" id="labelWaktuSelesai">Waktu Penanganan Selesai</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light-success text-success border-0"><i class="ki-duotone ki-check-circle fs-2 text-success"><span class="path1"></span><span class="path2"></span></i></span>
-                                <input type="datetime-local" name="tanggal_waktu_selesai" id="inputWaktuSelesai" class="form-control form-control-solid @error('tanggal_waktu_selesai') is-invalid @enderror" value="{{ old('tanggal_waktu_selesai') }}" />
+                                <input type="datetime-local" name="tanggal_waktu_selesai" id="inputWaktuSelesai" class="form-control form-control-solid @error('tanggal_waktu_selesai') is-invalid @enderror" value="{{ old('tanggal_waktu_selesai', $laporan->tanggal_waktu_selesai ? \Carbon\Carbon::parse($laporan->tanggal_waktu_selesai)->format('Y-m-d\TH:i') : '') }}" />
                             </div>
                             <div class="text-muted fs-8 mt-1">Wajib diisi saat status operasi telah dinyatakan Selesai.</div>
                         </div>
@@ -137,14 +138,14 @@
                             <select name="kecamatan_id" class="form-select form-select-solid @error('kecamatan_id') is-invalid @enderror" required>
                                 <option value="">-- Pilih Kecamatan di Purwakarta --</option>
                                 @foreach ($kecamatans as $kec)
-                                    <option value="{{ $kec->id }}" {{ old('kecamatan_id') == $kec->id ? 'selected' : '' }}>
+                                    <option value="{{ $kec->id }}" {{ old('kecamatan_id', $laporan->kecamatan_id) == $kec->id ? 'selected' : '' }}>
                                         Kec. {{ $kec->nama_kecamatan }} ({{ $kec->zonaLayanan->nama_pos ?? 'Zona Pos' }})
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        {{-- 4. Kategori Objek (DINAMIS SINKRON DENGAN JENIS LAYANAN) --}}
+                        {{-- 4. Kategori Objek --}}
                         <div class="mb-6">
                             <label class="required form-label fw-semibold fs-6" id="labelKategoriObjek">Kategori Objek Terbakar</label>
                             <select name="kategori_objek_id" id="selectKategoriObjek" class="form-select form-select-solid @error('kategori_objek_id') is-invalid @enderror" required>
@@ -152,7 +153,7 @@
                                 @foreach ($kategoriObjek as $obj)
                                     <option value="{{ $obj->id }}" 
                                             data-jenis="{{ $obj->jenis_layanan }}" 
-                                            {{ old('kategori_objek_id') == $obj->id ? 'selected' : '' }}>
+                                            {{ old('kategori_objek_id', $laporan->kategori_objek_id) == $obj->id ? 'selected' : '' }}>
                                         {{ $obj->nama_kategori }} {{ $obj->is_karhutla ? '(Karhutla)' : '' }}
                                     </option>
                                 @endforeach
@@ -166,7 +167,7 @@
                             <select name="kategori_penyebab_id" id="selectPenyebab" class="form-select form-select-solid @error('kategori_penyebab_id') is-invalid @enderror">
                                 <option value="">-- Pilih Dugaan Penyebab --</option>
                                 @foreach ($kategoriPenyebab as $penyebab)
-                                    <option value="{{ $penyebab->id }}" {{ old('kategori_penyebab_id') == $penyebab->id ? 'selected' : '' }}>
+                                    <option value="{{ $penyebab->id }}" {{ old('kategori_penyebab_id', $laporan->kategori_penyebab_id) == $penyebab->id ? 'selected' : '' }}>
                                         {{ $penyebab->nama_penyebab }}
                                     </option>
                                 @endforeach
@@ -198,7 +199,7 @@
                                     <span class="input-group-text bg-light-warning text-warning border-0 fw-bold">
                                         <i class="ki-duotone ki-bandage fs-5 text-warning"><span class="path1"></span><span class="path2"></span></i>
                                     </span>
-                                    <input type="number" name="korban_luka_ringan" class="form-control form-control-solid @error('korban_luka_ringan') is-invalid @enderror" value="{{ old('korban_luka_ringan', 0) }}" min="0" placeholder="0" />
+                                    <input type="number" name="korban_luka_ringan" class="form-control form-control-solid @error('korban_luka_ringan') is-invalid @enderror" value="{{ old('korban_luka_ringan', $laporan->korban_luka_ringan ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
                                 </div>
                                 @error('korban_luka_ringan')
@@ -212,7 +213,7 @@
                                     <span class="input-group-text bg-light-danger text-danger border-0 fw-bold">
                                         <i class="ki-duotone ki-cross-circle fs-5 text-danger"><span class="path1"></span><span class="path2"></span></i>
                                     </span>
-                                    <input type="number" name="korban_luka_berat" class="form-control form-control-solid @error('korban_luka_berat') is-invalid @enderror" value="{{ old('korban_luka_berat', 0) }}" min="0" placeholder="0" />
+                                    <input type="number" name="korban_luka_berat" class="form-control form-control-solid @error('korban_luka_berat') is-invalid @enderror" value="{{ old('korban_luka_berat', $laporan->korban_luka_berat ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
                                 </div>
                                 @error('korban_luka_berat')
@@ -226,7 +227,7 @@
                                     <span class="input-group-text bg-danger text-white border-0 fw-bold">
                                         <i class="ki-duotone ki-user-cross fs-5 text-white"><span class="path1"></span><span class="path2"></span></i>
                                     </span>
-                                    <input type="number" name="korban_meninggal" class="form-control form-control-solid text-danger fw-bold @error('korban_meninggal') is-invalid @enderror" value="{{ old('korban_meninggal', 0) }}" min="0" placeholder="0" />
+                                    <input type="number" name="korban_meninggal" class="form-control form-control-solid text-danger fw-bold @error('korban_meninggal') is-invalid @enderror" value="{{ old('korban_meninggal', $laporan->korban_meninggal ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
                                 </div>
                                 @error('korban_meninggal')
@@ -243,7 +244,7 @@
                                     <span class="input-group-text bg-light-primary text-primary border-0 fw-bold">
                                         <i class="ki-duotone ki-home fs-5 text-primary"><span class="path1"></span><span class="path2"></span></i>
                                     </span>
-                                    <input type="number" name="kk_terdampak" class="form-control form-control-solid @error('kk_terdampak') is-invalid @enderror" value="{{ old('kk_terdampak', 0) }}" min="0" placeholder="0" />
+                                    <input type="number" name="kk_terdampak" class="form-control form-control-solid @error('kk_terdampak') is-invalid @enderror" value="{{ old('kk_terdampak', $laporan->kk_terdampak ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">KK</span>
                                 </div>
                                 @error('kk_terdampak')
@@ -255,9 +256,9 @@
                                 <label class="form-label fw-semibold fs-7 text-gray-700">Total Jiwa Terdampak</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light-info text-info border-0 fw-bold">
-                                        <i class="ki-duotone ki-people fs-5 text-info"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                                        <i class="ki-duotone ki-people fs-5 text-info"><span class="path1"></span><span class="path2"></span></i>
                                     </span>
-                                    <input type="number" name="jiwa_terdampak" class="form-control form-control-solid @error('jiwa_terdampak') is-invalid @enderror" value="{{ old('jiwa_terdampak', 0) }}" min="0" placeholder="0" />
+                                    <input type="number" name="jiwa_terdampak" class="form-control form-control-solid @error('jiwa_terdampak') is-invalid @enderror" value="{{ old('jiwa_terdampak', $laporan->jiwa_terdampak ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
                                 </div>
                                 @error('jiwa_terdampak')
@@ -288,7 +289,7 @@
                             <label class="form-label fw-semibold fs-6">Jumlah Personel Diterjunkan</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-0"><i class="ki-duotone ki-profile-circle fs-2 text-gray-600"><span class="path1"></span><span class="path2"></span></i></span>
-                                <input type="number" name="jumlah_personel" class="form-control form-control-solid" value="{{ old('jumlah_personel', 6) }}" min="0" placeholder="0" />
+                                <input type="number" name="jumlah_personel" class="form-control form-control-solid" value="{{ old('jumlah_personel', $laporan->jumlah_personel) }}" min="0" placeholder="0" />
                                 <span class="input-group-text bg-light border-0">Orang</span>
                             </div>
                         </div>
@@ -298,7 +299,7 @@
                             <label class="form-label fw-semibold fs-6">Taksiran Kerugian Material</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-0 fw-bold text-gray-700">Rp</span>
-                                <input type="number" name="taksiran_kerugian" class="form-control form-control-solid" value="{{ old('taksiran_kerugian', 0) }}" min="0" step="100000" placeholder="0" />
+                                <input type="number" name="taksiran_kerugian" class="form-control form-control-solid" value="{{ old('taksiran_kerugian', (int)$laporan->taksiran_kerugian) }}" min="0" step="100000" placeholder="0" />
                             </div>
                             <div class="text-muted fs-8 mt-1">Estimasi kerugian materiil akibat kejadian (Rp)</div>
                         </div>
@@ -308,7 +309,7 @@
                             <label class="form-label fw-semibold fs-6">Taksiran Nilai Terselamatkan</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-0 fw-bold text-gray-700">Rp</span>
-                                <input type="number" name="taksiran_terselamatkan" class="form-control form-control-solid" value="{{ old('taksiran_terselamatkan', 0) }}" min="0" step="100000" placeholder="0" />
+                                <input type="number" name="taksiran_terselamatkan" class="form-control form-control-solid" value="{{ old('taksiran_terselamatkan', (int)$laporan->taksiran_terselamatkan) }}" min="0" step="100000" placeholder="0" />
                             </div>
                             <div class="text-muted fs-8 mt-1">Estimasi aset yang berhasil diselamatkan</div>
                         </div>
@@ -317,11 +318,11 @@
                         <div class="row g-3">
                             <div class="col-6">
                                 <label class="form-label fw-semibold fs-7">Latitude (Opsional)</label>
-                                <input type="text" name="latitude" class="form-control form-control-sm form-control-solid" value="{{ old('latitude') }}" placeholder="-6.556" />
+                                <input type="text" name="latitude" class="form-control form-control-sm form-control-solid" value="{{ old('latitude', $laporan->latitude) }}" placeholder="-6.556" />
                             </div>
                             <div class="col-6">
                                 <label class="form-label fw-semibold fs-7">Longitude (Opsional)</label>
-                                <input type="text" name="longitude" class="form-control form-control-sm form-control-solid" value="{{ old('longitude') }}" placeholder="107.442" />
+                                <input type="text" name="longitude" class="form-control form-control-sm form-control-solid" value="{{ old('longitude', $laporan->longitude) }}" placeholder="107.442" />
                             </div>
                         </div>
 
@@ -338,16 +339,7 @@
                     </div>
                     <div class="card-body pt-2">
                         <div class="mb-4">
-                            <textarea name="deskripsi" class="form-control form-control-solid" rows="4" placeholder="Tuliskan kronologi singkat, alamat lengkap/patokan kejadian, kendala di lapangan, atau catatan penting lainnya...">{{ old('deskripsi') }}</textarea>
-                        </div>
-
-                        <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-4 mb-5">
-                            <i class="ki-duotone ki-information fs-2tx text-warning me-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                            <div class="d-flex flex-stack flex-grow-1">
-                                <div class="fw-semibold">
-                                    <div class="fs-7 text-gray-700">Laporan otomatis disimpan sebagai <strong>Draft</strong> dan masuk antrean verifikasi Admin Damkar sebelum tayang di dashboard publik.</div>
-                                </div>
-                            </div>
+                            <textarea name="deskripsi" class="form-control form-control-solid" rows="4" placeholder="Tuliskan kronologi singkat, alamat lengkap/patokan kejadian, kendala di lapangan, atau catatan penting lainnya...">{{ old('deskripsi', $laporan->deskripsi) }}</textarea>
                         </div>
 
                         {{-- Tombol Aksi --}}
@@ -355,7 +347,7 @@
                             <a href="{{ route('petugas.kejadian.index') }}" class="btn btn-sm btn-light">Batal</a>
                             <button type="submit" class="btn btn-sm btn-primary d-flex align-items-center" id="btnSubmit">
                                 <i class="ki-duotone ki-check fs-3 me-1"><span class="path1"></span><span class="path2"></span></i>
-                                <span>Simpan Laporan (Draft)</span>
+                                <span>Perbarui Laporan</span>
                             </button>
                         </div>
                     </div>
@@ -371,13 +363,11 @@
 <script>
 /**
  * Logika Dinamisasi Kategori Objek & Dugaan Penyebab
- * Menyesuaikan opsi kategori objek berdasarkan jenis layanan yang dipilih.
  */
 function sinkronisasiJenisLayanan() {
     const isDarurat = document.getElementById('layananDarurat').checked;
     const targetJenis = isDarurat ? 'kebakaran' : 'rescue';
 
-    // Update active visual state pada radio buttons
     const labelDarurat = document.getElementById('labelLayananDarurat');
     const labelRescue  = document.getElementById('labelLayananRescue');
     if (isDarurat) {
@@ -388,17 +378,15 @@ function sinkronisasiJenisLayanan() {
         labelDarurat.classList.remove('active');
     }
 
-    // Ubah label judul kategori objek
     const labelKategori = document.getElementById('labelKategoriObjek');
     labelKategori.innerText = isDarurat ? 'Kategori Objek Terbakar' : 'Jenis Operasi Penyelamatan (Rescue)';
 
-    // Filter dropdown Kategori Objek
     const selectObjek = document.getElementById('selectKategoriObjek');
     const options = selectObjek.querySelectorAll('option');
     let selectedStillValid = false;
 
     options.forEach(opt => {
-        if (!opt.value) return; // Lewati opsi placeholder
+        if (!opt.value) return;
         const optJenis = opt.getAttribute('data-jenis');
         if (optJenis === targetJenis) {
             opt.style.display = '';
@@ -410,12 +398,10 @@ function sinkronisasiJenisLayanan() {
         }
     });
 
-    // Jika opsi yang sebelumnya dipilih tidak cocok dengan jenis layanan baru, reset ke placeholder
     if (!selectedStillValid && selectObjek.value) {
         selectObjek.value = '';
     }
 
-    // Toggle Dugaan Penyebab (hanya relevan untuk Kebakaran)
     const wrapperPenyebab = document.getElementById('wrapperPenyebab');
     const selectPenyebab  = document.getElementById('selectPenyebab');
 
