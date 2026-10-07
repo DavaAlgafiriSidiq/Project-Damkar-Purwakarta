@@ -18,24 +18,26 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Buat akun Admin
-        User::updateOrCreate(
+        $admin = User::updateOrCreate(
             ['email' => 'admin@damkar.com'],
             [
-                'name' => 'Administrator Damkar',
+                'name'     => 'Administrator Damkar',
                 'password' => Hash::make('password'),
-                'role' => 'admin',
             ]
         );
+        $admin->role = 'admin';
+        $admin->save();
 
         // Buat akun Petugas
-        User::updateOrCreate(
+        $petugas = User::updateOrCreate(
             ['email' => 'petugas@damkar.com'],
             [
-                'name' => 'Petugas Lapangan',
+                'name'     => 'Petugas Lapangan',
                 'password' => Hash::make('password'),
-                'role' => 'petugas',
             ]
         );
+        $petugas->role = 'petugas';
+        $petugas->save();
 
         $this->command->info('UserSeeder: 2 Akun dummy berhasil dibuat.');
     }

@@ -26,7 +26,7 @@ class User extends Authenticatable
 
     /**
      * Kolom yang boleh diisi lewat mass assignment.
-     * 'role' wajib disertakan agar UserSeeder dapat mengisi role saat pertama kali dibuat.
+     * Kolom 'role' sengaja tidak dimasukkan ke $fillable demi keamanan (mencegah eskalasi hak akses).
      *
      * @var array<int, string>
      */
@@ -34,7 +34,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // Wajib: digunakan oleh UserSeeder dan RoleMiddleware
     ];
 
     /**

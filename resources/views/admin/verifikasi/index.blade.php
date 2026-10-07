@@ -357,17 +357,29 @@
                                     <span class="text-dark fw-bold">Rp {{ number_format($item->taksiran_kerugian, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
-                                    @if ($item->status_verifikasi === 'verified')
-                                        <span class="badge badge-light-success fw-bold px-3 py-2">
-                                            <i class="ki-duotone ki-verify fs-7 me-1 text-success"><span class="path1"></span><span class="path2"></span></i>
-                                            Terverifikasi
-                                        </span>
-                                    @else
-                                        <span class="badge badge-light-warning fw-bold px-3 py-2">
-                                            <i class="ki-duotone ki-time fs-7 me-1 text-warning"><span class="path1"></span><span class="path2"></span></i>
-                                            Draft
-                                        </span>
-                                    @endif
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        {{-- Badge Status Operasi Lapangan --}}
+                                        @if ($item->status_operasi === 'dalam_penanganan')
+                                            <span class="badge badge-light-warning text-warning fw-bolder px-2 py-1 fs-8 border border-warning border-dashed" title="Operasi masih aktif di lapangan">
+                                                🟡 Penanganan
+                                            </span>
+                                        @else
+                                            <span class="badge badge-light-success text-success fw-bold px-2 py-1 fs-8" title="Operasi telah selesai">
+                                                🟢 Selesai
+                                            </span>
+                                        @endif
+
+                                        {{-- Status Verifikasi Dokumen --}}
+                                        @if ($item->status_verifikasi === 'verified')
+                                            <span class="badge badge-light-success fw-semibold px-2 py-1 fs-9">
+                                                Terverifikasi
+                                            </span>
+                                        @else
+                                            <span class="badge badge-light-secondary text-muted fw-semibold px-2 py-1 fs-9">
+                                                Draft
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end gap-2">

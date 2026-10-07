@@ -40,7 +40,14 @@ class KejadianKebakaran extends Model
         'taksiran_kerugian',
         'taksiran_terselamatkan',
         'deskripsi',
+        'korban_meninggal',
+        'korban_luka_berat',
+        'korban_luka_ringan',
+        'kk_terdampak',
+        'jiwa_terdampak',
         'status_verifikasi',
+        'status_operasi',
+        'tanggal_waktu_selesai',
         'dilaporkan_oleh',
         'diverifikasi_oleh',
         'diverifikasi_pada',
@@ -49,12 +56,18 @@ class KejadianKebakaran extends Model
     // Cast tipe data agar konsisten saat digunakan di PHP maupun JSON output
     protected $casts = [
         'tanggal_waktu_kejadian' => 'datetime',  // otomatis jadi Carbon instance
+        'tanggal_waktu_selesai'  => 'datetime',
         'diverifikasi_pada'      => 'datetime',
         'latitude'               => 'float',      // numerik, bukan string
         'longitude'              => 'float',
         'taksiran_kerugian'      => 'float',      // agar JSON output berupa number, bukan string
         'taksiran_terselamatkan' => 'float',
         'jumlah_personel'        => 'integer',
+        'korban_meninggal'       => 'integer',
+        'korban_luka_berat'      => 'integer',
+        'korban_luka_ringan'     => 'integer',
+        'kk_terdampak'           => 'integer',
+        'jiwa_terdampak'         => 'integer',
     ];
 
     // ─── Eloquent Scopes ──────────────────────────────────────

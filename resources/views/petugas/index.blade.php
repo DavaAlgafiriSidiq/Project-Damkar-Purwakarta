@@ -234,17 +234,29 @@
                                     <span class="text-dark fw-bold">Rp {{ number_format($item->taksiran_kerugian, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
-                                    @if ($item->status_verifikasi === 'verified')
-                                        <span class="badge badge-light-success fw-bold px-3 py-2">
-                                            <i class="ki-duotone ki-verify fs-7 me-1 text-success"><span class="path1"></span><span class="path2"></span></i>
-                                            Terverifikasi
-                                        </span>
-                                    @else
-                                        <span class="badge badge-light-warning fw-bold px-3 py-2">
-                                            <i class="ki-duotone ki-time fs-7 me-1 text-warning"><span class="path1"></span><span class="path2"></span></i>
-                                            Draft (Menunggu)
-                                        </span>
-                                    @endif
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        {{-- Badge Status Operasi Lapangan --}}
+                                        @if ($item->status_operasi === 'dalam_penanganan')
+                                            <span class="badge badge-light-warning text-warning fw-bolder px-2 py-1 fs-8 border border-warning border-dashed" title="Operasi masih aktif di lapangan">
+                                                🟡 Penanganan
+                                            </span>
+                                        @else
+                                            <span class="badge badge-light-success text-success fw-bold px-2 py-1 fs-8" title="Operasi telah selesai">
+                                                🟢 Selesai
+                                            </span>
+                                        @endif
+
+                                        {{-- Status Verifikasi Dokumen --}}
+                                        @if ($item->status_verifikasi === 'verified')
+                                            <span class="badge badge-light-success fw-semibold px-2 py-1 fs-9">
+                                                Terverifikasi
+                                            </span>
+                                        @else
+                                            <span class="badge badge-light-secondary text-muted fw-semibold px-2 py-1 fs-9">
+                                                Draft
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
 
                                 {{-- Kolom Aksi: hanya Detail (read-only).
@@ -252,7 +264,13 @@
                                      hanya menyediakan index, create, dan store. Koreksi data sepenuhnya
                                      menjadi kewenangan Admin verifikator. --}}
                                 <td class="text-end">
-                                    <div class="d-flex justify-content-end">
+                                    <div class="d-flex justify-content-end align-items-center gap-1">
+                                        @if($item->status_verifikasi === 'draft')
+                                            <a href="{{ route('petugas.kejadian.edit', $item->id) }}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm w-35px h-35px shadow-xs"
+                                               title="Edit Laporan Draft">
+                                                <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                            </a>
+                                        @endif
                                         <button type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm w-35px h-35px shadow-xs"
                                                 title="Lihat Detail Laporan" data-bs-toggle="modal" data-bs-target="#modalDetailPetugas{{ $item->id }}">
                                             <i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
@@ -305,6 +323,31 @@
                                                         <div class="col-6">
                                                             <div class="text-muted fs-7">Taksiran Nilai Terselamatkan</div>
                                                             <div class="fw-bold fs-6 text-success">Rp {{ number_format($item->taksiran_terselamatkan ?? 0, 0, ',', '.') }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    {{-- Rincian Korban & Terdampak --}}
+                                                    <div class="card bg-light-secondary border-0 p-4 mb-4">
+                                                        <div class="fw-bold fs-7 text-gray-800 mb-2 d-flex align-items-center">
+                                                            <i class="ki-duotone ki-heart-circle fs-5 text-danger me-2"><span class="path1"></span><span class="path2"></span></i>
+                                                            Data Korban & Dampak Sosial:
+                                                        </div>
+                                                        <div class="row g-2 text-center">
+                                                            <div class="col-4">
+                                                                <span class="badge badge-light-warning w-100 py-2 fs-8">Luka Ringan: <strong>{{ $item->korban_luka_ringan ?? 0 }}</strong></span>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <span class="badge badge-light-danger w-100 py-2 fs-8">Luka Berat: <strong>{{ $item->korban_luka_berat ?? 0 }}</strong></span>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <span class="badge badge-danger w-100 py-2 fs-8">Meninggal: <strong>{{ $item->korban_meninggal ?? 0 }}</strong></span>
+                                                            </div>
+                                                            <div class="col-6 mt-2">
+                                                                <div class="text-muted fs-8">KK Terdampak: <strong class="text-dark">{{ $item->kk_terdampak ?? 0 }} KK</strong></div>
+                                                            </div>
+                                                            <div class="col-6 mt-2">
+                                                                <div class="text-muted fs-8">Jiwa Terdampak: <strong class="text-dark">{{ $item->jiwa_terdampak ?? 0 }} Jiwa</strong></div>
+                                                            </div>
                                                         </div>
                                                     </div>
 
