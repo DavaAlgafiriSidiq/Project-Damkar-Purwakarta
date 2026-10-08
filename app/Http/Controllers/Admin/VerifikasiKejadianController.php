@@ -200,6 +200,7 @@ class VerifikasiKejadianController extends Controller
         $statusOperasi = $validated['status_operasi'] ?? 'dalam_penanganan';
         $waktuSelesai = $statusOperasi === 'selesai' ? ($validated['tanggal_waktu_selesai'] ?? null) : null;
 
+        // Update kolom yang ada di $fillable via mass assignment
         $laporan->update([
             'jenis_layanan'          => $validated['jenis_layanan'],
             'tanggal_waktu_kejadian' => $validated['tanggal_waktu_kejadian'],
@@ -219,10 +220,13 @@ class VerifikasiKejadianController extends Controller
             'status_operasi'         => $statusOperasi,
             'tanggal_waktu_selesai'  => $waktuSelesai,
             'deskripsi'              => $validated['deskripsi'] ?? null,
-            'status_verifikasi'      => $validated['status_verifikasi'],
-            'diverifikasi_oleh'      => $diverifikasiOleh,
-            'diverifikasi_pada'      => $diverifikasiPada,
         ]);
+
+        // Kolom verifikasi di-set langsung (tidak ada di $fillable) — admin only
+        $laporan->status_verifikasi = $validated['status_verifikasi'];
+        $laporan->diverifikasi_oleh = $diverifikasiOleh;
+        $laporan->diverifikasi_pada = $diverifikasiPada;
+        $laporan->save();
 
         return redirect()->route('admin.verifikasi.index')
             ->with('success', "Laporan ID #{$laporan->id} berhasil diperbarui.");
@@ -238,11 +242,10 @@ class VerifikasiKejadianController extends Controller
     {
         $laporan = KejadianKebakaran::findOrFail($id);
 
-        $laporan->update([
-            'status_verifikasi' => 'verified',
-            'diverifikasi_oleh' => auth()->id(),
-            'diverifikasi_pada' => now(),
-        ]);
+        $laporan->status_verifikasi = 'verified';
+        $laporan->diverifikasi_oleh = auth()->id();
+        $laporan->diverifikasi_pada = now();
+        $laporan->save();
 
         return redirect()->back()
             ->with('success', "Laporan ID #{$laporan->id} berhasil diverifikasi (Approved) dan kini aktif pada dashboard publik.");

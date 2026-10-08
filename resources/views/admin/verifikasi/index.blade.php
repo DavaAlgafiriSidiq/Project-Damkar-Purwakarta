@@ -351,7 +351,17 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="text-gray-800 fw-semibold fs-7">{{ $item->pelapor->name ?? 'Petugas Lapangan' }}</span>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-gray-800 fw-semibold fs-7">{{ $item->pelapor->name ?? 'Petugas Lapangan' }}</span>
+                                        @if($item->nama_pelapor)
+                                            <span class="badge badge-light-warning text-warning fw-bold fs-8 mt-1">
+                                                <i class="ki-duotone ki-user fs-8 me-1"><span class="path1"></span><span class="path2"></span></i>
+                                                {{ $item->nama_pelapor }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted fs-8 fst-italic">— (data lama)</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="text-end">
                                     <span class="text-dark fw-bold">Rp {{ number_format($item->taksiran_kerugian, 0, ',', '.') }}</span>
