@@ -6,6 +6,7 @@ use App\Http\Controllers\Analytics\ChartDataController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Petugas\KejadianKebakaranController as PetugasKejadianController;
 use App\Http\Controllers\Admin\VerifikasiKejadianController as AdminVerifikasiController;
+use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,4 +74,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/verifikasi/{id}', [AdminVerifikasiController::class, 'update'])->name('verifikasi.update');
     Route::post('/verifikasi/{id}/approve', [AdminVerifikasiController::class, 'approve'])->name('verifikasi.approve');
     Route::delete('/verifikasi/{id}', [AdminVerifikasiController::class, 'destroy'])->name('verifikasi.destroy');
+
+    // Modul Rekapitulasi Matriks Tahunan (Format Excel)
+    Route::get('/laporan/matriks', [AdminLaporanController::class, 'rekapMatriks'])->name('laporan.matriks');
 });

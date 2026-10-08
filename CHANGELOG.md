@@ -5,6 +5,21 @@ Semua perubahan penting pada proyek Sistem Pencatatan & Dashboard Analitik Damka
 ## [Unreleased] - 2026-10-08
 
 ### Added
+- **Restrukturisasi Matriks Rekapitulasi Tahunan & Pemisahan Data Murni (Format Excel Dinas Damkar):**
+  - **Pemisahan Fisik Operasi Kebakaran vs Penyelamatan:** Memisahkan data murni agar tidak ada kerancuan objek non-api pada penyebab kebakaran:
+    1. *Tab 1: Distribusi Wilayah (Kecamatan):* Mengagregasi seluruh kejadian (Kebakaran + Rescue) per kecamatan per bulan (1-12) dan total tahunan.
+    2. *Tab 2: Operasi Pemadaman Kebakaran (Murni Darurat):* Memuat 2 tabel vertikal terpisah — (Tabel 2.A) Berdasarkan Objek Kebakaran (Bangunan, Hutan & Lahan, Sarana) dan (Tabel 2.B) Berdasarkan Dugaan Penyebab Api (11 faktor asal mula api).
+    3. *Tab 3: Operasi Penyelamatan / Rescue (Murni Non-Darurat):* Memuat 1 tabel berdasarkan jenis kasus penyelamatan (Penyelamatan Hewan Liar & Evakuasi Khusus).
+    4. *Konsistensi Matematika:* Total Pemadaman Kebakaran + Total Penyelamatan = Total Seluruh Insiden Wilayah.
+  - **Database Migration & Seeder Zona Layanan (WMK):**
+    - Migration `2026_10_08_033938_add_zona_layanan_to_kecamatan_table.php` menambahkan kolom `zona_layanan` (`string`, `nullable`) pada tabel `kecamatan`.
+    - Memperbarui [KecamatanSeeder.php](file:///c:/xampp/htdocs/Project%20Damkar/database/seeders/KecamatanSeeder.php) untuk memetakan 18 kecamatan ke 5 zona operasional baku sesuai aturan 8.10 di `ai-context.md` (`WMK Pusat`, `WMK UPTD 1`, `WMK UPTD 2`, `WMK UPTD 3`, dan `Luar Daerah`).
+  - **Fitur Filter Zona Layanan Dinamis:**
+    - [Admin\LaporanController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Admin/LaporanController.php) mendukung filter parameter `$request->zona_layanan` yang secara dinamis menyaring data wilayah, kebakaran, dan rescue.
+    - Menambahkan dropdown filter "Zona Layanan" di header tabel [admin/laporan/matriks.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/matriks.blade.php) berdampingan dengan filter "Pilih Tahun".
+  - **Translasi Istilah Baku:** Menggunakan terminologi Bahasa Indonesia baku: "Bangunan" (sebelumnya Struktur), "Penyelamatan Hewan" (sebelumnya Animal), "Evakuasi Khusus" (sebelumnya Rescue), "Hutan & Lahan" (sebelumnya Karhutla), dan "Perbantuan" (Mutual Aid).
+  - **Pembaruan Ikon Sidebar:** Mengganti ikon menu Rekapitulasi Matriks pada [layouts/partials/_sidebar.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/layouts/partials/_sidebar.blade.php) dan [layouts/app.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/layouts/app.blade.php) menjadi `ki-document`.
+
 - **Akuntabilitas Akun Bersama (`nama_pelapor`):**
   - **Database Migration:** Migration `2026_10_08_000001_add_nama_pelapor_to_kejadian_kebakaran_table.php` menambahkan kolom `nama_pelapor` (`string(100)`, `nullable`) pada tabel `kejadian_kebakaran`.
   - **Model Eloquent:** Menambahkan `nama_pelapor` ke dalam `$fillable` model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php).
