@@ -260,6 +260,13 @@ class VerifikasiKejadianController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $laporan = KejadianKebakaran::findOrFail($id);
+
+        // Guard Integritas Data: Mencegah penghapusan jika laporan sudah berstatus verified
+        if ($laporan->status_verifikasi === 'verified') {
+            return redirect()->back()
+                ->with('error', 'Data terverifikasi tidak dapat dihapus. Silakan batalkan verifikasi terlebih dahulu jika ada kesalahan fatal.');
+        }
+
         $idHapus = $laporan->id;
         $laporan->delete();
 

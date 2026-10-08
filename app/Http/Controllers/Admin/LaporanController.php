@@ -162,13 +162,13 @@ class LaporanController extends Controller
 
         // ─────────────────────────────────────────────────────────────────────
         // 2. MATRIKS 2: OPERASI PEMADAMAN KEBAKARAN (MURNI DARURAT)
-        //    (a) Berdasarkan Objek Kebakaran (ID 1-9: Bangunan, Hutan & Lahan)
+        //    (a) Berdasarkan Objek Kebakaran (jenis_layanan = 'kebakaran')
         //    (b) Berdasarkan Dugaan Penyebab Api (11 Kategori)
         // ─────────────────────────────────────────────────────────────────────
         $queryKebakaran = (clone $baseQuery)->where('jenis_layanan', 'darurat');
 
-        // 2.A Objek Kebakaran
-        $objekKebakaranList = KategoriObjek::whereIn('id', range(1, 9))->orderBy('id')->get();
+        // 2.A Objek Kebakaran (Dinamis berdasarkan jenis_layanan)
+        $objekKebakaranList = KategoriObjek::where('jenis_layanan', 'kebakaran')->orderBy('id')->get();
         $rawObjekKebakaran = (clone $queryKebakaran)
             ->whereNotNull('kategori_objek_id')
             ->selectRaw('kategori_objek_id, MONTH(tanggal_waktu_kejadian) as bulan, COUNT(*) as total')
@@ -242,11 +242,11 @@ class LaporanController extends Controller
 
         // ─────────────────────────────────────────────────────────────────────
         // 3. MATRIKS 3: OPERASI PENYELAMATAN / RESCUE (MURNI NON-DARURAT)
-        //    Berdasarkan Jenis Objek Penyelamatan (ID 10-22)
+        //    Berdasarkan Jenis Objek Penyelamatan (jenis_layanan = 'rescue')
         // ─────────────────────────────────────────────────────────────────────
         $queryRescue = (clone $baseQuery)->where('jenis_layanan', 'non_darurat');
 
-        $objekRescueList = KategoriObjek::whereIn('id', range(10, 22))->orderBy('id')->get();
+        $objekRescueList = KategoriObjek::where('jenis_layanan', 'rescue')->orderBy('id')->get();
         $rawRescue = (clone $queryRescue)
             ->whereNotNull('kategori_objek_id')
             ->selectRaw('kategori_objek_id, MONTH(tanggal_waktu_kejadian) as bulan, COUNT(*) as total')
@@ -258,7 +258,7 @@ class LaporanController extends Controller
         $grandTotalRescue = 0;
 
         foreach ($objekRescueList as $obj) {
-            $isAnimal  = in_array($obj->id, [10, 11, 12, 13, 14, 15]);
+            $isAnimal  = (bool) preg_match('/(tawon|ular|monyet|lutung|biawak|kucing|binatang|hewan)/i', $obj->nama_kategori);
             $tipeLabel = $isAnimal ? 'Penyelamatan Hewan' : 'Evakuasi Khusus';
             $tipeBadge = $isAnimal ? 'badge-light-info' : 'badge-light-success';
 

@@ -4,6 +4,23 @@ Semua perubahan penting pada proyek Sistem Pencatatan & Dashboard Analitik Damka
 
 ## [Unreleased] - 2026-10-08
 
+### Fixed & Refactored
+- **Penghapusan Hardcode Kategori (`LaporanController.php`):**
+  - Menghapus ketergantungan `whereIn('id', range(1, 9))` dan `whereIn('id', range(10, 22))` pada agregasi matriks rekapitulasi.
+  - Mengubah query menjadi dinamis menggunakan kolom `jenis_layanan`:
+    - Objek Kebakaran: `KategoriObjek::where('jenis_layanan', 'kebakaran')->orderBy('id')->get()`
+    - Objek Penyelamatan: `KategoriObjek::where('jenis_layanan', 'rescue')->orderBy('id')->get()`
+    - Penentuan sub-tipe Penyelamatan Hewan vs Evakuasi Khusus dilakukan secara dinamis menggunakan pencocokan kata kunci nama kategori, bukan array ID statis.
+- **Proteksi Integritas Data Terverifikasi (`VerifikasiKejadianController.php`):**
+  - Menambahkan guard pada method `destroy(int $id)` untuk menolak penghapusan laporan yang sudah berstatus `verified` (`status_verifikasi === 'verified'`).
+  - Mengembalikan flash message error `Data terverifikasi tidak dapat dihapus. Silakan batalkan verifikasi terlebih dahulu jika ada kesalahan fatal.`.
+  - Menambahkan container `@if(session('error'))` pada [admin/verifikasi/index.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/verifikasi/index.blade.php) dengan styling Metronic 8 `alert-danger`.
+- **Koreksi Dokumentasi Model (`User.php`):**
+  - Memperbaiki docblock pada [User.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/User.php) yang sebelumnya kontradiktif mengenai `$fillable` role, menegaskan bahwa `role` sengaja dikeluarkan dari `$fillable` demi mencegah Mass Assignment Vulnerability.
+- **Pembersihan File Sampah / Demo:**
+  - Menghapus `resources/views/layouts/partials/header.blade.php` (sisa demo Metronic yang tidak digunakan).
+  - Menghapus `resources/views/welcome.blade.php` (sisa template bawaan Laravel).
+
 ### Added
 - **Fitur Ekspor Rekapitulasi Matriks ke File Excel (.xlsx):**
   - **Library Integration:** Mengintegrasikan `maatwebsite/excel` (v4.0.3) dengan `phpoffice/phpspreadsheet` (v5.10.0) untuk kompilasi lembar kerja spreadsheet berformat native `.xlsx`.
