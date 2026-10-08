@@ -7,8 +7,12 @@ use App\Models\KejadianKebakaran;
 use App\Models\Kecamatan;
 use App\Models\KategoriObjek;
 use App\Models\KategoriPenyebab;
+use App\Exports\RekapMatriksExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * Controller: LaporanController (Admin)
@@ -20,21 +24,56 @@ use Illuminate\View\View;
  *   - Scope verifiedOnly() secara mutlak (hanya data sah/terverifikasi).
  *   - Pemisahan fisik murni antara Operasi Kebakaran dan Operasi Penyelamatan (Rescue).
  *   - Filter Zona Layanan baku (WMK Pusat, WMK UPTD 1, WMK UPTD 2, WMK UPTD 3, Luar Daerah).
+ *   - Fitur Ekspor ke file Excel multi-sheet (.xlsx).
  */
 class LaporanController extends Controller
 {
     /**
-     * Menampilkan halaman matriks rekapitulasi tahunan.
+     * Menampilkan halaman matriks rekapitulasi tahunan di web dashboard.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
     public function rekapMatriks(Request $request): View
     {
-        // Parameter Filter
         $tahun       = (int) $request->input('tahun', now()->year);
-        $zonaLayanan = $request->input('zona_layanan'); // null atau nama zona baku
+        $zonaLayanan = $request->input('zona_layanan');
 
+        $data = $this->getMatriksData($tahun, $zonaLayanan);
+
+        return view('admin.laporan.matriks', $data);
+    }
+
+    /**
+     * Mengunduh rekapitulasi matriks tahunan ke dalam format Excel (.xlsx).
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportExcel(Request $request): BinaryFileResponse
+    {
+        $tahun       = (int) $request->input('tahun', now()->year);
+        $zonaLayanan = $request->input('zona_layanan');
+
+        $data = $this->getMatriksData($tahun, $zonaLayanan);
+
+        // Format nama file: Rekap_Kejadian_Damkar_2026.xlsx atau Rekap_Kejadian_Damkar_2026_wmk_uptd_1.xlsx
+        $zonaSuffix = $zonaLayanan ? '_' . Str::slug($zonaLayanan, '_') : '';
+        $fileName   = "Rekap_Kejadian_Damkar_{$tahun}{$zonaSuffix}.xlsx";
+
+        return Excel::download(new RekapMatriksExport($data), $fileName);
+    }
+
+    /**
+     * Helper terpusat untuk mengumpulkan data matriks rekapitulasi.
+     * Digunakan bersama oleh rekapMatriks() (web view) dan exportExcel() (export .xlsx).
+     *
+     * @param  int          $tahun
+     * @param  string|null  $zonaLayanan
+     * @return array
+     */
+    public function getMatriksData(int $tahun, ?string $zonaLayanan = null): array
+    {
         // Ambil daftar tahun unik yang tersedia di database
         $tahunList = KejadianKebakaran::selectRaw('YEAR(tanggal_waktu_kejadian) as th')
             ->whereNotNull('tanggal_waktu_kejadian')
@@ -219,7 +258,7 @@ class LaporanController extends Controller
         $grandTotalRescue = 0;
 
         foreach ($objekRescueList as $obj) {
-            $isAnimal = in_array($obj->id, [10, 11, 12, 13, 14, 15]);
+            $isAnimal  = in_array($obj->id, [10, 11, 12, 13, 14, 15]);
             $tipeLabel = $isAnimal ? 'Penyelamatan Hewan' : 'Evakuasi Khusus';
             $tipeBadge = $isAnimal ? 'badge-light-info' : 'badge-light-success';
 
@@ -253,29 +292,29 @@ class LaporanController extends Controller
             'total_rescue'    => (clone $queryRescue)->count(),
         ];
 
-        return view('admin.laporan.matriks', compact(
-            'tahun',
-            'tahunList',
-            'zonaLayanan',
-            'zonaList',
-            'namaBulan',
+        return [
+            'tahun'                    => $tahun,
+            'tahunList'                => $tahunList,
+            'zonaLayanan'              => $zonaLayanan,
+            'zonaList'                 => $zonaList,
+            'namaBulan'                => $namaBulan,
             // Matriks Wilayah
-            'matrixKecamatan',
-            'totalBulanKecamatan',
-            'grandTotalKecamatan',
+            'matrixKecamatan'          => $matrixKecamatan,
+            'totalBulanKecamatan'      => $totalBulanKecamatan,
+            'grandTotalKecamatan'      => $grandTotalKecamatan,
             // Matriks Kebakaran
-            'matrixObjekKebakaran',
-            'totalBulanObjekKebakaran',
-            'grandTotalObjekKebakaran',
-            'matrixPenyebab',
-            'totalBulanPenyebab',
-            'grandTotalPenyebab',
+            'matrixObjekKebakaran'     => $matrixObjekKebakaran,
+            'totalBulanObjekKebakaran' => $totalBulanObjekKebakaran,
+            'grandTotalObjekKebakaran' => $grandTotalObjekKebakaran,
+            'matrixPenyebab'           => $matrixPenyebab,
+            'totalBulanPenyebab'       => $totalBulanPenyebab,
+            'grandTotalPenyebab'       => $grandTotalPenyebab,
             // Matriks Rescue
-            'matrixRescue',
-            'totalBulanRescue',
-            'grandTotalRescue',
+            'matrixRescue'             => $matrixRescue,
+            'totalBulanRescue'         => $totalBulanRescue,
+            'grandTotalRescue'         => $grandTotalRescue,
             // KPI Summary
-            'summary'
-        ));
+            'summary'                  => $summary,
+        ];
     }
 }

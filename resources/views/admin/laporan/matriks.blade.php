@@ -21,11 +21,15 @@
             </ul>
         </div>
 
-        {{-- Action Buttons (Print / Cetak) --}}
+        {{-- Action Buttons (Ekspor Excel & Print) --}}
         <div class="d-flex align-items-center gap-2 gap-lg-3 my-1">
+            <a href="{{ route('admin.laporan.matriks.export', array_filter(['tahun' => $tahun, 'zona_layanan' => $zonaLayanan])) }}" class="btn btn-sm btn-success border border-success shadow-xs d-flex align-items-center">
+                <i class="ki-duotone ki-file-down fs-4 me-2"><span class="path1"></span><span class="path2"></span></i>
+                Ekspor Excel (.xlsx)
+            </a>
             <button type="button" class="btn btn-sm btn-light-primary border border-primary border-dashed shadow-xs d-flex align-items-center" onclick="window.print()">
                 <i class="ki-duotone ki-printer fs-4 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-                Cetak / Ekspor Lembar Kerja
+                Cetak Lembar Kerja
             </button>
         </div>
     </div>
