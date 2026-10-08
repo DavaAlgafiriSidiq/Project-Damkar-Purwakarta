@@ -329,7 +329,44 @@
                     </div>
                 </div>
 
+
+                {{-- Card Nama Pelapor / Danru (Akuntabilitas Akun Bersama) --}}
+                <div class="card card-flush shadow-sm mb-7 border border-dashed border-warning">
+                    <div class="card-header pt-6">
+                        <div class="card-title">
+                            <i class="ki-duotone ki-user-edit fs-2 text-warning me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                            <h3 class="fw-bold m-0 fs-5">Akuntabilitas Pelapor</h3>
+                        </div>
+                    </div>
+                    <div class="card-body pt-2">
+                        <div class="notice d-flex bg-light-warning rounded border-0 p-3 mb-4">
+                            <i class="ki-duotone ki-information fs-4 text-warning me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                            <div class="fs-8 text-gray-700">
+                                Karena satu akun dipakai bersama satu regu, <strong>nama anggota yang menginput</strong> laporan ini wajib dicatat untuk keperluan internal dinas.
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <label class="required form-label fw-semibold fs-6" for="inputNamaPelapor">Nama Pelapor / Danru</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light-warning border-0">
+                                    <i class="ki-duotone ki-user fs-2 text-warning"><span class="path1"></span><span class="path2"></span></i>
+                                </span>
+                                <input type="text" name="nama_pelapor" id="inputNamaPelapor"
+                                    class="form-control form-control-solid @error('nama_pelapor') is-invalid @enderror"
+                                    value="{{ old('nama_pelapor', $laporan->nama_pelapor) }}"
+                                    placeholder="Contoh: Sertu Budi Santoso / Danru Shift A"
+                                    maxlength="100" required />
+                            </div>
+                            @error('nama_pelapor')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                            <div class="text-muted fs-8 mt-1">Nama ini hanya terlihat oleh Admin Damkar (tidak ditampilkan publik).</div>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Card Deskripsi & Kronologi --}}
+
                 <div class="card card-flush shadow-sm mb-7">
                     <div class="card-header pt-6">
                         <div class="card-title">

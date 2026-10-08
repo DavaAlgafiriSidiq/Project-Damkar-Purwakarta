@@ -55,6 +55,7 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::post('/kejadian', [PetugasKejadianController::class, 'store'])->name('kejadian.store');
     Route::get('/kejadian/{id}/edit', [PetugasKejadianController::class, 'edit'])->name('kejadian.edit');
     Route::put('/kejadian/{id}', [PetugasKejadianController::class, 'update'])->name('kejadian.update');
+    Route::delete('/kejadian/{id}', [PetugasKejadianController::class, 'destroy'])->name('kejadian.destroy');
 });
 
 

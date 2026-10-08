@@ -134,6 +134,7 @@ class KejadianKebakaranController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'nama_pelapor'           => ['required', 'string', 'max:100'],
             'jenis_layanan'          => ['required', 'in:darurat,non_darurat'],
             'tanggal_waktu_kejadian' => ['required', 'date'],
             'kecamatan_id'           => ['required', 'exists:kecamatan,id'],
@@ -169,7 +170,12 @@ class KejadianKebakaranController extends Controller
         $statusOperasi = $validated['status_operasi'] ?? 'dalam_penanganan';
         $waktuSelesai = $statusOperasi === 'selesai' ? ($validated['tanggal_waktu_selesai'] ?? null) : null;
 
-        KejadianKebakaran::create([
+        // Bangun instance baru — kolom yang TIDAK ada di $fillable di-set langsung
+        // ke properti model (bukan via mass assignment) untuk memastikan server
+        // memaksa nilai yang benar secara hardcode.
+        $laporan = new KejadianKebakaran();
+        $laporan->fill([
+            'nama_pelapor'           => $validated['nama_pelapor'],
             'jenis_layanan'          => $validated['jenis_layanan'],
             'tanggal_waktu_kejadian' => $validated['tanggal_waktu_kejadian'],
             'kecamatan_id'           => $validated['kecamatan_id'],
@@ -186,13 +192,15 @@ class KejadianKebakaranController extends Controller
             'kk_terdampak'           => $validated['kk_terdampak'] ?? 0,
             'jiwa_terdampak'         => $validated['jiwa_terdampak'] ?? 0,
             'deskripsi'              => $validated['deskripsi'] ?? null,
-            'status_verifikasi'      => 'draft',
             'status_operasi'         => $statusOperasi,
             'tanggal_waktu_selesai'  => $waktuSelesai,
             'dilaporkan_oleh'        => auth()->id(),
-            'diverifikasi_oleh'      => null,
-            'diverifikasi_pada'      => null,
         ]);
+        // Server memaksa nilai ini — tidak boleh datang dari request
+        $laporan->status_verifikasi = 'draft';
+        $laporan->diverifikasi_oleh = null;
+        $laporan->diverifikasi_pada = null;
+        $laporan->save();
 
         return redirect()->route('petugas.kejadian.index')
             ->with('success', 'Laporan kejadian berhasil disimpan sebagai Draft dan menunggu verifikasi Admin.');
@@ -208,6 +216,11 @@ class KejadianKebakaranController extends Controller
     {
         $laporan = KejadianKebakaran::where('dilaporkan_oleh', auth()->id())
             ->findOrFail($id);
+
+        // Guard: petugas tidak boleh mengedit laporan yang sudah diverifikasi
+        if ($laporan->status_verifikasi !== 'draft') {
+            abort(403, 'Akses ditolak: Laporan sudah diverifikasi.');
+        }
 
         $kecamatans       = Kecamatan::with('zonaLayanan')->orderBy('nama_kecamatan')->get();
         $kategoriObjek    = KategoriObjek::orderBy('nama_kategori')->get();
@@ -228,7 +241,13 @@ class KejadianKebakaranController extends Controller
         $laporan = KejadianKebakaran::where('dilaporkan_oleh', auth()->id())
             ->findOrFail($id);
 
+        // Guard: petugas tidak boleh mengubah laporan yang sudah diverifikasi
+        if ($laporan->status_verifikasi !== 'draft') {
+            abort(403, 'Akses ditolak: Laporan sudah diverifikasi.');
+        }
+
         $validated = $request->validate([
+            'nama_pelapor'           => ['required', 'string', 'max:100'],
             'jenis_layanan'          => ['required', 'in:darurat,non_darurat'],
             'tanggal_waktu_kejadian' => ['required', 'date'],
             'kecamatan_id'           => ['required', 'exists:kecamatan,id'],
@@ -254,6 +273,7 @@ class KejadianKebakaranController extends Controller
             'kategori_objek_id.required'      => 'Kategori objek wajib dipilih.',
             'status_operasi.required'         => 'Status operasi wajib dipilih.',
             'tanggal_waktu_selesai.required_if' => 'Waktu penanganan selesai wajib diisi saat status operasi Selesai.',
+            'nama_pelapor.required'           => 'Nama pelapor / Danru wajib diisi.',
             'korban_meninggal.integer'        => 'Jumlah korban meninggal harus berupa angka.',
             'korban_luka_berat.integer'       => 'Jumlah korban luka berat harus berupa angka.',
             'korban_luka_ringan.integer'      => 'Jumlah korban luka ringan harus berupa angka.',
@@ -265,6 +285,7 @@ class KejadianKebakaranController extends Controller
         $waktuSelesai = $statusOperasi === 'selesai' ? ($validated['tanggal_waktu_selesai'] ?? null) : null;
 
         $laporan->update([
+            'nama_pelapor'           => $validated['nama_pelapor'],
             'jenis_layanan'          => $validated['jenis_layanan'],
             'tanggal_waktu_kejadian' => $validated['tanggal_waktu_kejadian'],
             'kecamatan_id'           => $validated['kecamatan_id'],
@@ -287,5 +308,29 @@ class KejadianKebakaranController extends Controller
 
         return redirect()->route('petugas.kejadian.index')
             ->with('success', "Laporan ID #{$laporan->id} berhasil diperbarui.");
+    }
+
+    /**
+     * Menghapus laporan kejadian milik petugas.
+     * Hanya laporan berstatus 'draft' yang boleh dihapus.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(int $id): RedirectResponse
+    {
+        $laporan = KejadianKebakaran::where('dilaporkan_oleh', auth()->id())
+            ->findOrFail($id);
+
+        // Guard: petugas tidak boleh menghapus laporan yang sudah diverifikasi
+        if ($laporan->status_verifikasi !== 'draft') {
+            abort(403, 'Akses ditolak: Laporan sudah diverifikasi.');
+        }
+
+        $idHapus = $laporan->id;
+        $laporan->delete();
+
+        return redirect()->route('petugas.kejadian.index')
+            ->with('success', "Laporan ID #{$idHapus} berhasil dihapus.");
     }
 }

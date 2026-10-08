@@ -2,6 +2,39 @@
 
 Semua perubahan penting pada proyek Sistem Pencatatan & Dashboard Analitik Damkar Purwakarta dicatat dalam berkas ini.
 
+## [Unreleased] - 2026-10-08
+
+### Added
+- **Akuntabilitas Akun Bersama (`nama_pelapor`):**
+  - **Database Migration:** Migration `2026_10_08_000001_add_nama_pelapor_to_kejadian_kebakaran_table.php` menambahkan kolom `nama_pelapor` (`string(100)`, `nullable`) pada tabel `kejadian_kebakaran`.
+  - **Model Eloquent:** Menambahkan `nama_pelapor` ke dalam `$fillable` model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php).
+  - **Backend Validation:** Validasi wajib diisi (`required`, `string`, `max:100`) pada method `store()` dan `update()` di [Petugas\KejadianKebakaranController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Petugas/KejadianKebakaranController.php).
+  - **Frontend Metronic 8:** Menambahkan input field "Nama Pelapor / Danru" dengan border aksen peringatan akun bersama pada [create.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/petugas/create.blade.php) dan [edit.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/petugas/edit.blade.php) modul Petugas.
+  - **Admin Interface:** Menampilkan badge nama Danru / pelapor fisik di bawah nama akun sistem pada kolom Pelapor di tabel daftar verifikasi [admin/verifikasi/index.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/verifikasi/index.blade.php).
+
+- **Soft Deletes pada Laporan Kejadian:**
+  - **Database Migration:** Migration `2026_10_08_000002_add_soft_deletes_to_kejadian_kebakaran_table.php` menambahkan kolom `deleted_at` pada tabel `kejadian_kebakaran`.
+  - **Model Eloquent:** Menambahkan trait `Illuminate\Database\Eloquent\SoftDeletes` pada model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php) agar data yang dihapus tetap tersimpan dan dapat diaudit.
+
+- **Sistem Audit Log Otomatis:**
+  - **Database Migration:** Migration `2026_10_08_000003_create_audit_logs_table.php` membuat tabel `audit_logs` (`id`, `user_id`, `action`, `model_type`, `model_id`, `old_values`, `new_values`, `created_at`).
+  - **Model Eloquent:** Membuat model [AuditLog.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/AuditLog.php) dengan relasi `user()` dan casts array JSON.
+  - **Eloquent Observers (`booted`):** Mendaftarkan lifecycle hooks pada model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php) untuk mencatat log otomatis setiap ada mutasi: `created` (snapshot atribut baru), `updated` (mencatat dirty changes dan nilai lama yang berubah), serta `deleted` (snapshot sebelum dihapus).
+
+- **Data Master Wilayah "Luar Kabupaten":**
+  - **Seeder:** Menambahkan entri `'Luar Kabupaten' => 'PUSAT'` pada [KecamatanSeeder.php](file:///c:/xampp/htdocs/Project%20Damkar/database/seeders/KecamatanSeeder.php) untuk menampung kejadian di luar wilayah administratif yang memerlukan perbantuan (mutual aid) Damkar Purwakarta.
+
+### Security & Hardening
+- **Model Security ($fillable & Mass Assignment Guard):**
+  - Menghapus kolom `role` dari `$fillable` model [User.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/User.php) untuk mencegah eskalasi hak akses ilegal.
+  - Menghapus `status_verifikasi`, `diverifikasi_oleh`, dan `diverifikasi_pada` dari `$fillable` model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php).
+  - Mengunci pengisian status verifikasi di level server: Petugas secara hardcode selalu menyetel `draft` saat input baru (`store`), sedangkan Admin mengubah nilai status verifikasi secara eksplisit via assignment langsung pada method `update()` dan `approve()` di [VerifikasiKejadianController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Admin/VerifikasiKejadianController.php).
+- **Access Guard Petugas:**
+  - Menambahkan proteksi hak akses pada method `edit()`, `update()`, dan `destroy()` di [Petugas\KejadianKebakaranController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Petugas/KejadianKebakaranController.php) menggunakan `abort(403, 'Akses ditolak: Laporan sudah diverifikasi.')` apabila laporan sudah berstatus selain `'draft'`.
+  - Menambahkan route `DELETE /petugas/kejadian/{id}` pada [routes/web.php](file:///c:/xampp/htdocs/Project%20Damkar/routes/web.php).
+- **Privacy Audit Endpoint Publik:**
+  - Melakukan audit pada [ChartDataController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Analytics/ChartDataController.php) dan rute publik untuk memastikan tidak ada data identitas perorangan, `nama_pelapor`, maupun rincian korban perorangan yang bocor ke publik. Seluruh endpoint analitik hanya mengembalikan data agregat dan summary.
+
 ## [Unreleased] - 2026-10-07
 
 ### Added

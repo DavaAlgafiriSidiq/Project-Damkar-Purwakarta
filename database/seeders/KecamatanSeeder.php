@@ -55,6 +55,11 @@ class KecamatanSeeder extends Seeder
             'Cibatu'        => 'UPTD3',
             'Bungursari'    => 'UPTD3',
             'Campaka'       => 'UPTD3',
+
+            // ── Khusus: Di luar wilayah administratif Purwakarta ──────
+            // Digunakan untuk kejadian lintas batas / mutual aid.
+            // Dipetakan ke PUSAT karena koordinasinya melalui Kantor Dinas.
+            'Luar Kabupaten' => 'PUSAT',
         ];
 
         foreach ($kecamatans as $nama => $kodeZona) {
