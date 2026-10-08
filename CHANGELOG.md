@@ -5,6 +5,21 @@ Semua perubahan penting pada proyek Sistem Pencatatan & Dashboard Analitik Damka
 ## [Unreleased] - 2026-10-08
 
 ### Added
+- **Fitur Ekspor Rekapitulasi Matriks ke File Excel (.xlsx):**
+  - **Library Integration:** Mengintegrasikan `maatwebsite/excel` (v4.0.3) dengan `phpoffice/phpspreadsheet` (v5.10.0) untuk kompilasi lembar kerja spreadsheet berformat native `.xlsx`.
+  - **Arsitektur Multi-Sheet Export:**
+    - Membuat class induk [RekapMatriksExport.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Exports/RekapMatriksExport.php) yang mengimplementasikan `Maatwebsite\Excel\Concerns\Export` dan `Maatwebsite\Excel\Concerns\WithMultipleSheets`.
+    - Membuat 3 sheet dedicated yang mengimplementasikan `FromView`, `WithTitle`, dan `ShouldAutoSize`:
+      1. [RekapWilayahSheet.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Exports/Sheets/RekapWilayahSheet.php) &rarr; Sheet *1. Wilayah Kecamatan* ([wilayah.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/excel/wilayah.blade.php))
+      2. [RekapKebakaranSheet.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Exports/Sheets/RekapKebakaranSheet.php) &rarr; Sheet *2. Pemadaman Kebakaran* ([kebakaran.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/excel/kebakaran.blade.php))
+      3. [RekapRescueSheet.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Exports/Sheets/RekapRescueSheet.php) &rarr; Sheet *3. Operasi Penyelamatan* ([rescue.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/excel/rescue.blade.php))
+    - Masing-masing sheet dilengkapi header dinas resmi, styling warna tematik (Biru Wilayah, Merah/Oranye Kebakaran, Biru Tua Penyelamatan), border tabel standar, lebar kolom otomatis, dan footer total akumulasi.
+  - **Backend Controller & Routing:**
+    - Menambahkan method `exportExcel(Request $request)` dan refaktorisasi `getMatriksData(int $tahun, ?string $zonaLayanan)` di [Admin\LaporanController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Admin/LaporanController.php).
+    - Menghasilkan nama file rapi secara dinamis: `Rekap_Kejadian_Damkar_{tahun}.xlsx` (atau `Rekap_Kejadian_Damkar_{tahun}_{zona_slug}.xlsx` jika difilter per zona).
+    - Mendaftarkan rute `GET /admin/laporan/matriks/export` dengan nama `admin.laporan.matriks.export` di [routes/web.php](file:///c:/xampp/htdocs/Project%20Damkar/routes/web.php).
+  - **Frontend Binding:**
+    - Memperbarui tombol aksi pada [admin/laporan/matriks.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/matriks.blade.php) menjadi tag `<a>` tombol "Ekspor Excel (.xlsx)" yang otomatis meneruskan query parameters aktif (`?tahun=...&zona_layanan=...`) ke rute unduhan.
 - **Restrukturisasi Matriks Rekapitulasi Tahunan & Pemisahan Data Murni (Format Excel Dinas Damkar):**
   - **Pemisahan Fisik Operasi Kebakaran vs Penyelamatan:** Memisahkan data murni agar tidak ada kerancuan objek non-api pada penyebab kebakaran:
     1. *Tab 1: Distribusi Wilayah (Kecamatan):* Mengagregasi seluruh kejadian (Kebakaran + Rescue) per kecamatan per bulan (1-12) dan total tahunan.

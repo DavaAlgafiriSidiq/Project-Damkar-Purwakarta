@@ -77,4 +77,5 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Modul Rekapitulasi Matriks Tahunan (Format Excel)
     Route::get('/laporan/matriks', [AdminLaporanController::class, 'rekapMatriks'])->name('laporan.matriks');
+    Route::get('/laporan/matriks/export', [AdminLaporanController::class, 'exportExcel'])->name('laporan.matriks.export');
 });
