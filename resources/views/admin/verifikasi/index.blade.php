@@ -31,6 +31,20 @@
         </div>
     @endif
 
+    {{-- Flash Message Error --}}
+    @if(session('error'))
+        <div class="alert alert-dismissible bg-light-danger border border-danger d-flex flex-column flex-sm-row p-5 mb-7 shadow-xs">
+            <i class="ki-duotone ki-information-5 fs-2hx text-danger me-4 mb-5 mb-sm-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+            <div class="d-flex flex-column pe-0 pe-sm-10">
+                <h5 class="mb-1 text-danger">Operasi Ditolak!</h5>
+                <span class="text-danger fs-7">{{ session('error') }}</span>
+            </div>
+            <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
+                <i class="ki-duotone ki-cross fs-1 text-danger"><span class="path1"></span><span class="path2"></span></i>
+            </button>
+        </div>
+    @endif
+
     {{-- ── BARIS 1: KPI STATISTIK GLOBAL ── --}}
     {{-- Catatan: JANGAN pakai card-xl-stretch. Rule bawaan
          @media (min-width:1200px){ .card.card-xl-stretch{height:calc(100% - var(--bs-gutter-y))} }
