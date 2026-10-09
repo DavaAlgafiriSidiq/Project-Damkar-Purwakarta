@@ -47,4 +47,28 @@ class Kecamatan extends Model
     {
         return $this->hasMany(KejadianKebakaran::class, 'kecamatan_id');
     }
+
+    /**
+     * Scope untuk mengurutkan kecamatan secara sistematis:
+     * 1. WMK Pusat
+     * 2. WMK UPTD 1
+     * 3. WMK UPTD 2
+     * 4. WMK UPTD 3
+     * 5. Luar Kabupaten / Luar Daerah (di urutan paling akhir)
+     * Diikuti urutan nama_kecamatan ASC di setiap zona.
+     */
+    public function scopeOrderByZona($query)
+    {
+        return $query->orderByRaw("
+            CASE 
+                WHEN LOWER(nama_kecamatan) LIKE '%luar%' OR LOWER(COALESCE(zona_layanan, '')) LIKE '%luar%' THEN 5
+                WHEN LOWER(COALESCE(zona_layanan, '')) LIKE '%pusat%' THEN 1
+                WHEN LOWER(COALESCE(zona_layanan, '')) LIKE '%uptd 1%' OR LOWER(COALESCE(zona_layanan, '')) LIKE '%uptd1%' THEN 2
+                WHEN LOWER(COALESCE(zona_layanan, '')) LIKE '%uptd 2%' OR LOWER(COALESCE(zona_layanan, '')) LIKE '%uptd2%' THEN 3
+                WHEN LOWER(COALESCE(zona_layanan, '')) LIKE '%uptd 3%' OR LOWER(COALESCE(zona_layanan, '')) LIKE '%uptd3%' THEN 4
+                ELSE 4.5
+            END ASC,
+            nama_kecamatan ASC
+        ");
+    }
 }

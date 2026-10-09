@@ -45,14 +45,14 @@
     <div class="row g-5 g-xl-8 mb-7">
         {{-- Total Draft --}}
         <div class="col-md-4">
-            <a href="{{ route('petugas.kejadian.index', ['status' => 'draft']) }}" class="card h-100 bg-light-warning hoverable border border-warning border-dashed">
+            <a href="{{ route('petugas.kejadian.index', ['status' => 'draft']) }}" class="card h-100 bg-light-warning hoverable border border-gray-200 shadow-sm rounded-3">
                 <div class="card-body d-flex align-items-center justify-content-between py-5 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
                         <span class="text-warning fw-bold fs-7">Laporan Draft (Menunggu)</span>
-                        <span class="text-dark fw-bolder fs-2hx mt-1">{{ number_format($countDraft) }}</span>
+                        <span class="text-gray-900 fw-bolder fs-2hx mt-1 tracking-tight">{{ number_format($countDraft) }}</span>
                     </div>
                     <div class="symbol symbol-45px symbol-circle flex-shrink-0">
-                        <span class="symbol-label bg-white shadow-sm">
+                        <span class="symbol-label bg-white shadow-xs">
                             <i class="ki-duotone ki-time fs-2 text-warning"><span class="path1"></span><span class="path2"></span></i>
                         </span>
                     </div>
@@ -62,14 +62,14 @@
 
         {{-- Total Terverifikasi --}}
         <div class="col-md-4">
-            <a href="{{ route('petugas.kejadian.index', ['status' => 'verified']) }}" class="card h-100 bg-light-success hoverable border border-success border-dashed">
+            <a href="{{ route('petugas.kejadian.index', ['status' => 'verified']) }}" class="card h-100 bg-light-success hoverable border border-gray-200 shadow-sm rounded-3">
                 <div class="card-body d-flex align-items-center justify-content-between py-5 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
                         <span class="text-success fw-bold fs-7">Laporan Terverifikasi (Sah)</span>
-                        <span class="text-dark fw-bolder fs-2hx mt-1">{{ number_format($countVerified) }}</span>
+                        <span class="text-gray-900 fw-bolder fs-2hx mt-1 tracking-tight">{{ number_format($countVerified) }}</span>
                     </div>
                     <div class="symbol symbol-45px symbol-circle flex-shrink-0">
-                        <span class="symbol-label bg-white shadow-sm">
+                        <span class="symbol-label bg-white shadow-xs">
                             <i class="ki-duotone ki-verify fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>
                         </span>
                     </div>
@@ -79,14 +79,14 @@
 
         {{-- Total Seluruh Input --}}
         <div class="col-md-4">
-            <a href="{{ route('petugas.kejadian.index', ['status' => 'all']) }}" class="card h-100 bg-light-primary hoverable border border-primary border-dashed">
+            <a href="{{ route('petugas.kejadian.index', ['status' => 'all']) }}" class="card h-100 bg-light-primary hoverable border border-gray-200 shadow-sm rounded-3">
                 <div class="card-body d-flex align-items-center justify-content-between py-5 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
                         <span class="text-primary fw-bold fs-7">Total Laporan Saya</span>
-                        <span class="text-dark fw-bolder fs-2hx mt-1">{{ number_format($countTotal) }}</span>
+                        <span class="text-gray-900 fw-bolder fs-2hx mt-1 tracking-tight">{{ number_format($countTotal) }}</span>
                     </div>
                     <div class="symbol symbol-45px symbol-circle flex-shrink-0">
-                        <span class="symbol-label bg-white shadow-sm">
+                        <span class="symbol-label bg-white shadow-xs">
                             <i class="ki-duotone ki-folder fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
                         </span>
                     </div>
@@ -141,21 +141,25 @@
                         {{-- Status Select --}}
                         <div class="d-flex align-items-center gap-2">
                             <span class="fs-8 text-muted fw-semibold">Status:</span>
-                            <select name="status" class="form-select form-select-solid form-select-sm w-150px" onchange="document.getElementById('formFilterPetugas').submit();">
-                                <option value="all" {{ $status === 'all' ? 'selected' : '' }}>Semua Status</option>
-                                <option value="draft" {{ $status === 'draft' ? 'selected' : '' }}>Draft (Menunggu)</option>
-                                <option value="verified" {{ $status === 'verified' ? 'selected' : '' }}>Terverifikasi</option>
-                            </select>
+                            <div style="width: 160px;">
+                                <select name="status" id="filterStatus" class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+                                    <option value="all" {{ $status === 'all' ? 'selected' : '' }}>Semua Status</option>
+                                    <option value="draft" data-icon="ki-duotone ki-time" {{ $status === 'draft' ? 'selected' : '' }}>Draft (Menunggu)</option>
+                                    <option value="verified" data-icon="ki-duotone ki-verify" {{ $status === 'verified' ? 'selected' : '' }}>Terverifikasi</option>
+                                </select>
+                            </div>
                         </div>
 
                         {{-- Jenis Layanan Select --}}
                         <div class="d-flex align-items-center gap-2">
                             <span class="fs-8 text-muted fw-semibold">Layanan:</span>
-                            <select name="jenis_layanan" class="form-select form-select-solid form-select-sm w-150px" onchange="document.getElementById('formFilterPetugas').submit();">
-                                <option value="">Semua Layanan</option>
-                                <option value="darurat" {{ $jenisLayanan === 'darurat' ? 'selected' : '' }}>Kebakaran</option>
-                                <option value="non_darurat" {{ $jenisLayanan === 'non_darurat' ? 'selected' : '' }}>Rescue</option>
-                            </select>
+                            <div style="width: 155px;">
+                                <select name="jenis_layanan" id="filterLayanan" class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
+                                    <option value="">Semua Layanan</option>
+                                    <option value="darurat" data-icon="las la-fire" {{ $jenisLayanan === 'darurat' ? 'selected' : '' }}>Kebakaran</option>
+                                    <option value="non_darurat" data-icon="ki-duotone ki-shield-tick" {{ $jenisLayanan === 'non_darurat' ? 'selected' : '' }}>Rescue</option>
+                                </select>
+                            </div>
                         </div>
 
                         {{-- Rentang Tanggal Custom --}}
@@ -213,7 +217,7 @@
                                         @if($item->jenis_layanan === 'darurat')
                                             <span class="badge badge-light-danger w-90px mt-1"><i class="las la-fire fs-8 me-1 text-danger"></i> Kebakaran</span>
                                         @else
-                                            <span class="badge badge-light-primary w-90px mt-1"><i class="ki-duotone ki-rescue fs-8 me-1 text-primary"></i> Rescue</span>
+                                            <span class="badge badge-light-primary w-90px mt-1"><i class="ki-duotone ki-shield-tick fs-8 me-1 text-primary"></i> Rescue</span>
                                         @endif
                                     </div>
                                 </td>
@@ -237,7 +241,7 @@
                                     <div class="d-flex flex-column align-items-center gap-1">
                                         {{-- Badge Status Operasi Lapangan --}}
                                         @if ($item->status_operasi === 'dalam_penanganan')
-                                            <span class="badge badge-light-warning text-warning fw-bolder px-2 py-1 fs-8 border border-warning border-dashed" title="Operasi masih aktif di lapangan">
+                                            <span class="badge badge-light-warning text-warning fw-bolder px-2 py-1 fs-8" title="Operasi masih aktif di lapangan">
                                                 🟡 Penanganan
                                             </span>
                                         @else
@@ -377,7 +381,7 @@
                                                     </div>
 
                                                     @if($item->status_verifikasi === 'draft')
-                                                        <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-4 mt-5">
+                                                        <div class="notice d-flex bg-light-warning rounded-3 border-0 shadow-xs p-4 mt-5">
                                                             <i class="ki-duotone ki-information fs-2tx text-warning me-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                                                             <div class="fw-semibold fs-7 text-gray-700">
                                                                 Laporan ini masih berstatus <strong>Draft</strong>. Perbaikan atau pembatalan data hanya dapat dilakukan oleh Admin verifikator.
@@ -418,4 +422,16 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.$) {
+        $('#filterStatus, #filterLayanan').on('change', function() {
+            $('#formFilterPetugas').submit();
+        });
+    }
+});
+</script>
+@endpush
 @endsection

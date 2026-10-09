@@ -113,21 +113,23 @@ class LaporanController extends Controller
             12 => 'Des',
         ];
 
-        // Base Query untuk filter tahun & zona layanan terpilih
-        $baseQuery = KejadianKebakaran::verifiedOnly()
-            ->whereYear('tanggal_waktu_kejadian', $tahun)
+        // Query tahunan dasar (tanpa filter zona layanan) untuk Matriks 1
+        $queryTahunan = KejadianKebakaran::verifiedOnly()
+            ->whereYear('tanggal_waktu_kejadian', $tahun);
+
+        // Base Query untuk Tabel 2 & 3 (dipengaruhi filter zona layanan jika dipilih)
+        $baseQueryZona = (clone $queryTahunan)
             ->when($zonaLayanan, function ($query, $zona) {
                 $query->whereHas('kecamatan', fn($k) => $k->where('zona_layanan', $zona));
             });
 
         // ─────────────────────────────────────────────────────────────────────
-        // 1. MATRIKS 1: DISTRIBUSI WILAYAH KECAMATAN (SEMUA KEJADIAN)
+        // 1. MATRIKS 1: DISTRIBUSI WILAYAH KECAMATAN (SEMUA KEJADIAN & KECAMATAN)
+        //    Tabel 1 tetap utuh menampilkan semua kecamatan sesuai format baku dinas
         // ─────────────────────────────────────────────────────────────────────
-        $kecamatans = Kecamatan::when($zonaLayanan, fn($q) => $q->where('zona_layanan', $zonaLayanan))
-            ->orderBy('id')
-            ->get();
+        $kecamatans = Kecamatan::orderByZona()->get();
 
-        $rawKecamatan = (clone $baseQuery)
+        $rawKecamatan = (clone $queryTahunan)
             ->whereNotNull('kecamatan_id')
             ->selectRaw('kecamatan_id, MONTH(tanggal_waktu_kejadian) as bulan, COUNT(*) as total')
             ->groupBy('kecamatan_id', 'bulan')
@@ -165,10 +167,10 @@ class LaporanController extends Controller
         //    (a) Berdasarkan Objek Kebakaran (jenis_layanan = 'kebakaran')
         //    (b) Berdasarkan Dugaan Penyebab Api (11 Kategori)
         // ─────────────────────────────────────────────────────────────────────
-        $queryKebakaran = (clone $baseQuery)->where('jenis_layanan', 'darurat');
+        $queryKebakaran = (clone $baseQueryZona)->where('jenis_layanan', 'darurat');
 
         // 2.A Objek Kebakaran (Dinamis berdasarkan jenis_layanan)
-        $objekKebakaranList = KategoriObjek::where('jenis_layanan', 'kebakaran')->orderBy('id')->get();
+        $objekKebakaranList = KategoriObjek::where('jenis_layanan', 'kebakaran')->orderWithLainLast('id')->get();
         $rawObjekKebakaran = (clone $queryKebakaran)
             ->whereNotNull('kategori_objek_id')
             ->selectRaw('kategori_objek_id, MONTH(tanggal_waktu_kejadian) as bulan, COUNT(*) as total')
@@ -207,7 +209,7 @@ class LaporanController extends Controller
         }
 
         // 2.B Dugaan Penyebab Api
-        $kategoriPenyebabs = KategoriPenyebab::orderBy('id')->get();
+        $kategoriPenyebabs = KategoriPenyebab::orderWithLainLast('id')->get();
         $rawPenyebab = (clone $queryKebakaran)
             ->whereNotNull('kategori_penyebab_id')
             ->selectRaw('kategori_penyebab_id, MONTH(tanggal_waktu_kejadian) as bulan, COUNT(*) as total')
@@ -244,9 +246,9 @@ class LaporanController extends Controller
         // 3. MATRIKS 3: OPERASI PENYELAMATAN / RESCUE (MURNI NON-DARURAT)
         //    Berdasarkan Jenis Objek Penyelamatan (jenis_layanan = 'rescue')
         // ─────────────────────────────────────────────────────────────────────
-        $queryRescue = (clone $baseQuery)->where('jenis_layanan', 'non_darurat');
+        $queryRescue = (clone $baseQueryZona)->where('jenis_layanan', 'non_darurat');
 
-        $objekRescueList = KategoriObjek::where('jenis_layanan', 'rescue')->orderBy('id')->get();
+        $objekRescueList = KategoriObjek::where('jenis_layanan', 'rescue')->orderWithLainLast('id')->get();
         $rawRescue = (clone $queryRescue)
             ->whereNotNull('kategori_objek_id')
             ->selectRaw('kategori_objek_id, MONTH(tanggal_waktu_kejadian) as bulan, COUNT(*) as total')
@@ -287,7 +289,7 @@ class LaporanController extends Controller
 
         // Ringkasan KPI untuk header halaman (dipengaruhi filter tahun & zona layanan)
         $summary = [
-            'total_kejadian'  => (clone $baseQuery)->count(),
+            'total_kejadian'  => (clone $baseQueryZona)->count(),
             'total_kebakaran' => (clone $queryKebakaran)->count(),
             'total_rescue'    => (clone $queryRescue)->count(),
         ];

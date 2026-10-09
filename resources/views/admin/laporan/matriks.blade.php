@@ -23,11 +23,11 @@
 
         {{-- Action Buttons (Ekspor Excel & Print) --}}
         <div class="d-flex align-items-center gap-2 gap-lg-3 my-1">
-            <a href="{{ route('admin.laporan.matriks.export', array_filter(['tahun' => $tahun, 'zona_layanan' => $zonaLayanan])) }}" class="btn btn-sm btn-success border border-success shadow-xs d-flex align-items-center">
+            <a href="{{ route('admin.laporan.matriks.export', array_filter(['tahun' => $tahun, 'zona_layanan' => $zonaLayanan])) }}" class="btn btn-sm btn-success border-0 shadow-xs d-flex align-items-center">
                 <i class="ki-duotone ki-file-down fs-4 me-2"><span class="path1"></span><span class="path2"></span></i>
                 Ekspor Excel (.xlsx)
             </a>
-            <button type="button" class="btn btn-sm btn-light-primary border border-primary border-dashed shadow-xs d-flex align-items-center" onclick="window.print()">
+            <button type="button" class="btn btn-sm btn-light-primary border-0 shadow-xs d-flex align-items-center" onclick="window.print()">
                 <i class="ki-duotone ki-printer fs-4 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
                 Cetak Lembar Kerja
             </button>
@@ -38,11 +38,11 @@
     <div class="row g-5 g-xl-6 mb-7">
         {{-- Total Kejadian Terverifikasi --}}
         <div class="col-sm-6 col-xl-4">
-            <div class="card h-100 bg-light-primary border border-primary border-dashed shadow-xs">
+            <div class="card h-100 bg-light-primary border border-gray-200 shadow-sm rounded-3">
                 <div class="card-body d-flex align-items-center justify-content-between py-4 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
                         <span class="text-primary fw-bold fs-7 text-uppercase ls-1">Total Insiden Terverifikasi</span>
-                        <span class="text-dark fw-bolder fs-2x mt-1">{{ number_format($summary['total_kejadian']) }}</span>
+                        <span class="text-gray-900 fw-bolder fs-2x mt-1 tracking-tight">{{ number_format($summary['total_kejadian']) }}</span>
                         <span class="text-muted fs-8 mt-1">Akumulasi {{ $zonaLayanan ? 'Zona ' . $zonaLayanan : 'Seluruh Wilayah' }} ({{ $tahun }})</span>
                     </div>
                     <div class="symbol symbol-45px symbol-circle flex-shrink-0">
@@ -56,11 +56,11 @@
 
         {{-- Kebakaran (Darurat) --}}
         <div class="col-sm-6 col-xl-4">
-            <div class="card h-100 bg-light-danger border border-danger border-dashed shadow-xs">
+            <div class="card h-100 bg-light-danger border border-gray-200 shadow-sm rounded-3">
                 <div class="card-body d-flex align-items-center justify-content-between py-4 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
                         <span class="text-danger fw-bold fs-7 text-uppercase ls-1">Operasi Pemadaman Kebakaran</span>
-                        <span class="text-dark fw-bolder fs-2x mt-1">{{ number_format($summary['total_kebakaran']) }}</span>
+                        <span class="text-gray-900 fw-bolder fs-2x mt-1 tracking-tight">{{ number_format($summary['total_kebakaran']) }}</span>
                         <span class="text-muted fs-8 mt-1">Layanan Darurat Pemadaman Api</span>
                     </div>
                     <div class="symbol symbol-45px symbol-circle flex-shrink-0">
@@ -72,18 +72,18 @@
             </div>
         </div>
 
-        {{-- Penyelamatan / Rescue (Non-Darurat) --}}
+        {{-- Penyelamatan / Rescue (Non-Darurat - Tema Ungu) --}}
         <div class="col-sm-12 col-xl-4">
-            <div class="card h-100 bg-light-info border border-info border-dashed shadow-xs">
+            <div class="card h-100 border border-gray-200 shadow-sm rounded-3" style="background-color: #f8f5ff !important;">
                 <div class="card-body d-flex align-items-center justify-content-between py-4 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
-                        <span class="text-info fw-bold fs-7 text-uppercase ls-1">Operasi Penyelamatan (Rescue)</span>
-                        <span class="text-dark fw-bolder fs-2x mt-1">{{ number_format($summary['total_rescue']) }}</span>
+                        <span class="fw-bold fs-7 text-uppercase ls-1" style="color: #7239ea !important;">Operasi Penyelamatan (Rescue)</span>
+                        <span class="text-gray-900 fw-bolder fs-2x mt-1 tracking-tight">{{ number_format($summary['total_rescue']) }}</span>
                         <span class="text-muted fs-8 mt-1">Penyelamatan Hewan &amp; Evakuasi Khusus</span>
                     </div>
                     <div class="symbol symbol-45px symbol-circle flex-shrink-0">
                         <span class="symbol-label bg-white shadow-xs">
-                            <i class="ki-duotone ki-rescue fs-1 text-info"><span class="path1"></span><span class="path2"></span></i>
+                            <i class="ki-duotone ki-shield-tick fs-1" style="color: #7239ea !important;"><span class="path1"></span><span class="path2"></span></i>
                         </span>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
     </div>
 
     {{-- ── BARIS 2: CARD UTAMA TABEL MATRIKS METRONIC 8 ── --}}
-    <div class="card shadow-sm border-0 mb-8">
+    <div class="card shadow-sm border border-gray-200 mb-8">
         {{-- Card Header: Nav Tabs Sejajar Rapi & Form Filter Tahun + Zona --}}
         <div class="card-header card-header-stretch border-bottom border-gray-200">
             {{-- Nav Tabs Container (Flexbox Horizontal Sejajar Rapi) --}}
@@ -116,12 +116,12 @@
                         </a>
                     </li>
 
-                    {{-- Tab 3: Penyelamatan (Rescue) --}}
+                    {{-- Tab 3: Penyelamatan (Rescue - Tema Ungu) --}}
                     <li class="nav-item d-flex align-items-center" role="presentation">
-                        <a class="nav-link text-active-info d-inline-flex align-items-center py-4 px-4" data-bs-toggle="tab" href="#tab_rescue" role="tab">
-                            <i class="ki-duotone ki-rescue fs-4 me-2 text-info"><span class="path1"></span><span class="path2"></span></i>
-                            <span>3. Operasi Penyelamatan (Rescue)</span>
-                            <span class="badge badge-light-info ms-2 fs-8 fw-semibold">{{ number_format($summary['total_rescue']) }} Kasus</span>
+                        <a class="nav-link tab-rescue-link d-inline-flex align-items-center py-4 px-4" data-bs-toggle="tab" href="#tab_rescue" role="tab">
+                            <i class="ki-duotone ki-shield-tick fs-4 me-2" style="color: #7239ea;"><span class="path1"></span><span class="path2"></span></i>
+                            <span style="color: #7239ea;">3. Operasi Penyelamatan (Rescue)</span>
+                            <span class="badge ms-2 fs-8 fw-semibold" style="background-color: rgba(114, 57, 234, 0.1); color: #7239ea;">{{ number_format($summary['total_rescue']) }} Kasus</span>
                         </a>
                     </li>
                 </ul>
@@ -129,18 +129,20 @@
 
             {{-- Toolbar: Filter Tahun & Filter Zona Layanan --}}
             <div class="card-toolbar m-0 py-2">
-                <form action="{{ route('admin.laporan.matriks') }}" method="GET" class="d-flex align-items-center gap-3">
+                <form id="formFilterMatriks" action="{{ route('admin.laporan.matriks') }}" method="GET" class="d-flex align-items-center gap-3">
                     {{-- Filter Tahun --}}
                     <div class="d-flex align-items-center gap-2">
                         <label for="selectTahun" class="form-label fs-7 fw-bold text-gray-700 text-nowrap mb-0">
                             <i class="ki-duotone ki-calendar fs-6 me-1"><span class="path1"></span><span class="path2"></span></i>
                             Tahun:
                         </label>
-                        <select name="tahun" id="selectTahun" class="form-select form-select-sm form-select-solid w-110px fw-bold" onchange="this.form.submit()">
-                            @foreach($tahunList as $th)
-                                <option value="{{ $th }}" {{ (int)$tahun === (int)$th ? 'selected' : '' }}>{{ $th }}</option>
-                            @endforeach
-                        </select>
+                        <div style="min-width: 110px; width: 115px;">
+                            <select name="tahun" id="selectTahun" class="form-select form-select-sm form-select-solid fw-bold" data-control="select2" data-hide-search="true">
+                                @foreach($tahunList as $th)
+                                    <option value="{{ $th }}" data-icon="ki-duotone ki-calendar" {{ (int)$tahun === (int)$th ? 'selected' : '' }}>{{ $th }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     {{-- Filter Zona Layanan (WMK / UPTD) --}}
@@ -149,16 +151,18 @@
                             <i class="ki-duotone ki-compass fs-6 me-1"><span class="path1"></span><span class="path2"></span></i>
                             Zona:
                         </label>
-                        <select name="zona_layanan" id="selectZona" class="form-select form-select-sm form-select-solid w-150px fw-bold" onchange="this.form.submit()">
-                            <option value="">Semua Zona Layanan</option>
-                            @foreach($zonaList as $zona)
-                                <option value="{{ $zona }}" {{ $zonaLayanan === $zona ? 'selected' : '' }}>{{ $zona }}</option>
-                            @endforeach
-                        </select>
+                        <div style="min-width: 200px; width: 215px;">
+                            <select name="zona_layanan" id="selectZona" class="form-select form-select-sm form-select-solid fw-bold" data-control="select2" data-hide-search="true">
+                                <option value="" data-icon="ki-duotone ki-compass">Semua Zona Layanan</option>
+                                @foreach($zonaList as $zona)
+                                    <option value="{{ $zona }}" data-icon="ki-duotone ki-geolocation" {{ $zonaLayanan === $zona ? 'selected' : '' }}>{{ $zona }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     @if($zonaLayanan)
-                        <a href="{{ route('admin.laporan.matriks', ['tahun' => $tahun]) }}" class="btn btn-sm btn-icon btn-light-danger" title="Reset Filter Zona">
+                        <a href="{{ route('admin.laporan.matriks', ['tahun' => $tahun]) }}" id="btnResetZona" class="btn btn-sm btn-icon btn-light-danger" title="Reset Filter Zona">
                             <i class="ki-duotone ki-cross fs-4"><span class="path1"></span><span class="path2"></span></i>
                         </a>
                     @endif
@@ -302,7 +306,7 @@
                                 </thead>
                                 <tbody>
                                     @php $noObjK = 1; @endphp
-                                    @foreach($matrixObjekKebakaran as $objId => $row)
+                                    @forelse($matrixObjekKebakaran as $objId => $row)
                                         <tr>
                                             <td class="text-center text-muted fw-semibold">{{ $noObjK++ }}</td>
                                             <td class="fw-semibold text-gray-800 text-start">
@@ -323,7 +327,13 @@
                                                 {{ $row['total'] > 0 ? number_format($row['total']) : '0' }}
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="{{ 3 + count($namaBulan) + 1 }}" class="text-center text-muted py-5">
+                                                Tidak ada data kategori objek kebakaran untuk filter yang dipilih.
+                                            </td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                                 <tfoot class="bg-gray-100 fw-bolder text-gray-800 border-top-2 border-dark">
                                     <tr class="text-center align-middle fs-7">
@@ -375,7 +385,7 @@
                                 </thead>
                                 <tbody>
                                     @php $noPenyebab = 1; @endphp
-                                    @foreach($matrixPenyebab as $pId => $row)
+                                    @forelse($matrixPenyebab as $pId => $row)
                                         <tr>
                                             <td class="text-center text-muted fw-semibold">{{ $noPenyebab++ }}</td>
                                             <td class="fw-semibold text-gray-800 text-start">
@@ -394,7 +404,13 @@
                                                 {{ $row['total'] > 0 ? number_format($row['total']) : '0' }}
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="{{ 3 + count($namaBulan) + 1 }}" class="text-center text-muted py-5">
+                                                Tidak ada data faktor penyebab api untuk filter yang dipilih.
+                                            </td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                                 <tfoot class="bg-gray-100 fw-bolder text-gray-800 border-top-2 border-dark">
                                     <tr class="text-center align-middle fs-7">
@@ -424,7 +440,7 @@
                     <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                         <div>
                             <h4 class="text-gray-800 fw-bold mb-1">
-                                <i class="ki-duotone ki-rescue fs-4 text-info me-1"><span class="path1"></span><span class="path2"></span></i>
+                                <i class="ki-duotone ki-shield-tick fs-4 text-info me-1"><span class="path1"></span><span class="path2"></span></i>
                                 Rekapitulasi Operasi Penyelamatan (Rescue) Berdasarkan Jenis Kasus (Tahun {{ $tahun }})
                             </h4>
                             <span class="text-muted fs-7">
@@ -451,7 +467,7 @@
                             </thead>
                             <tbody>
                                 @php $noRescue = 1; @endphp
-                                @foreach($matrixRescue as $rId => $row)
+                                @forelse($matrixRescue as $rId => $row)
                                     <tr>
                                         <td class="text-center text-muted fw-semibold">{{ $noRescue++ }}</td>
                                         <td class="fw-semibold text-gray-800 text-start">
@@ -472,7 +488,13 @@
                                             {{ $row['total'] > 0 ? number_format($row['total']) : '0' }}
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="{{ 3 + count($namaBulan) + 1 }}" class="text-center text-muted py-5">
+                                            Tidak ada data operasi penyelamatan (rescue) untuk filter yang dipilih.
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                             <tfoot class="bg-gray-100 fw-bolder text-gray-800 border-top-2 border-dark">
                                 <tr class="text-center align-middle fs-7">
@@ -538,7 +560,7 @@
 }
 
 @media print {
-    .btn, .breadcrumb, .nav-line-tabs, #selectTahun, #selectZona, form {
+    .btn, .breadcrumb, .nav-line-tabs, #selectTahun, #selectZona, .select2-container, form {
         display: none !important;
     }
     .card {
@@ -556,5 +578,93 @@
     }
 }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var formFilter = document.getElementById('formFilterMatriks');
+    var btnReset = document.getElementById('btnResetZona');
+
+    function getActiveTabHash() {
+        var activeTabLink = document.querySelector('.nav-line-tabs .nav-link.active');
+        return activeTabLink ? activeTabLink.getAttribute('href') : (window.location.hash || '#tab_wilayah');
+    }
+
+    function updateFormAndResetAction(hash) {
+        if (!hash) hash = '#tab_wilayah';
+        if (formFilter) {
+            formFilter.action = formFilter.action.split('#')[0] + hash;
+        }
+        if (btnReset) {
+            btnReset.href = btnReset.href.split('#')[0] + hash;
+        }
+    }
+
+    // 1. STATE RETENTION: Pulihkan Tab dari URL Hash saat halaman dimuat ulang
+    var initialHash = window.location.hash;
+    if (initialHash && document.querySelector('.nav-line-tabs .nav-link[href="' + initialHash + '"]')) {
+        var targetTabLink = document.querySelector('.nav-line-tabs .nav-link[href="' + initialHash + '"]');
+        if (window.bootstrap && bootstrap.Tab) {
+            var tabInstance = bootstrap.Tab.getOrCreateInstance(targetTabLink);
+            tabInstance.show();
+        } else if (window.$) {
+            $(targetTabLink).tab('show');
+        }
+    }
+
+    // 2. Listener: Simpan hash ke URL & form action saat pengguna berpindah tab
+    var tabLinks = document.querySelectorAll('.nav-line-tabs .nav-link[data-bs-toggle="tab"]');
+    tabLinks.forEach(function(tabLink) {
+        tabLink.addEventListener('shown.bs.tab', function(e) {
+            var currentHash = e.target.getAttribute('href');
+            if (currentHash && history.replaceState) {
+                history.replaceState(null, null, currentHash);
+            }
+            updateFormAndResetAction(currentHash);
+        });
+    });
+
+    // Inisialisasi awal form action & tombol reset
+    updateFormAndResetAction(getActiveTabHash());
+
+    // 3. Filter Submit & Change: Pastikan hash selalu dipertahankan saat filter Zona/Tahun dikirim
+    if (formFilter) {
+        formFilter.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var activeHash = getActiveTabHash();
+            var url = new URL(formFilter.action, window.location.origin);
+            var formData = new FormData(formFilter);
+            for (var pair of formData.entries()) {
+                if (pair[1] !== '') {
+                    url.searchParams.set(pair[0], pair[1]);
+                } else {
+                    url.searchParams.delete(pair[0]);
+                }
+            }
+            url.hash = activeHash;
+            window.location.href = url.toString();
+        });
+    }
+
+    if (btnReset) {
+        btnReset.addEventListener('click', function(e) {
+            e.preventDefault();
+            var activeHash = getActiveTabHash();
+            var url = new URL(btnReset.href, window.location.origin);
+            url.hash = activeHash;
+            window.location.href = url.toString();
+        });
+    }
+
+    if (window.$) {
+        $('#selectTahun, #selectZona').on('change', function() {
+            if (formFilter) {
+                $(formFilter).trigger('submit');
+            }
+        });
+    }
+});
+</script>
 @endpush
 @endsection

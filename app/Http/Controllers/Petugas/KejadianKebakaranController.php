@@ -118,9 +118,9 @@ class KejadianKebakaranController extends Controller
      */
     public function create(): View
     {
-        $kecamatans       = Kecamatan::with('zonaLayanan')->orderBy('nama_kecamatan')->get();
-        $kategoriObjek    = KategoriObjek::orderBy('nama_kategori')->get();
-        $kategoriPenyebab = KategoriPenyebab::orderBy('nama_penyebab')->get();
+        $kecamatans       = Kecamatan::with('zonaLayanan')->orderByZona()->get();
+        $kategoriObjek    = KategoriObjek::orderWithLainLast('nama_kategori')->get();
+        $kategoriPenyebab = KategoriPenyebab::orderWithLainLast('nama_penyebab')->get();
 
         return view('petugas.create', compact('kecamatans', 'kategoriObjek', 'kategoriPenyebab'));
     }
@@ -222,9 +222,9 @@ class KejadianKebakaranController extends Controller
             abort(403, 'Akses ditolak: Laporan sudah diverifikasi.');
         }
 
-        $kecamatans       = Kecamatan::with('zonaLayanan')->orderBy('nama_kecamatan')->get();
-        $kategoriObjek    = KategoriObjek::orderBy('nama_kategori')->get();
-        $kategoriPenyebab = KategoriPenyebab::orderBy('nama_penyebab')->get();
+        $kecamatans       = Kecamatan::with('zonaLayanan')->orderByZona()->get();
+        $kategoriObjek    = KategoriObjek::orderWithLainLast('nama_kategori')->get();
+        $kategoriPenyebab = KategoriPenyebab::orderWithLainLast('nama_penyebab')->get();
 
         return view('petugas.edit', compact('laporan', 'kecamatans', 'kategoriObjek', 'kategoriPenyebab'));
     }
