@@ -100,6 +100,12 @@
                             <option value="{{ $num }}" {{ (string)($bulan ?? '') === (string)$num ? 'selected' : '' }}>{{ $namaBulan }}</option>
                         @endforeach
                     </select>
+                    <select name="zona_layanan" id="kpi_filter_zona_layanan" class="form-select form-select-sm" style="width:125px;">
+                        <option value="">Semua Zona</option>
+                        @foreach($zonaLayanans as $zona)
+                            <option value="{{ $zona }}" {{ (string)($zonaLayanan ?? '') === $zona ? 'selected' : '' }}>{{ $zona }}</option>
+                        @endforeach
+                    </select>
                     <select name="kecamatan_id" id="kpi_filter_kecamatan" class="form-select form-select-sm" style="width:145px;">
                         <option value="">Semua Kecamatan</option>
                         @foreach($kecamatans as $kec)
@@ -108,9 +114,16 @@
                     </select>
                     <select name="kategori_objek_id" id="kpi_filter_kategori_objek" class="form-select form-select-sm" style="width:130px;">
                         <option value="">Semua Objek</option>
-                        @foreach($kategoriObjeks as $obj)
-                            <option value="{{ $obj->id }}" {{ (string)($kategoriObjekId ?? '') === (string)$obj->id ? 'selected' : '' }}>{{ $obj->nama_kategori }}</option>
-                        @endforeach
+                        <optgroup label="── Kebakaran ──">
+                            @foreach($kategoriObjekKebakaran as $obj)
+                                <option value="{{ $obj->id }}" {{ (string)($kategoriObjekId ?? '') === (string)$obj->id ? 'selected' : '' }}>{{ $obj->nama_kategori }}</option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="── Rescue ──">
+                            @foreach($kategoriObjekRescue as $obj)
+                                <option value="{{ $obj->id }}" {{ (string)($kategoriObjekId ?? '') === (string)$obj->id ? 'selected' : '' }}>{{ $obj->nama_kategori }}</option>
+                            @endforeach
+                        </optgroup>
                     </select>
                     <select name="kategori_penyebab_id" id="kpi_filter_kategori_penyebab" class="form-select form-select-sm" style="width:135px;">
                         <option value="">Semua Penyebab</option>
@@ -254,6 +267,12 @@
                             <option value="{{ $num }}" {{ (string)($bulan ?? '') === (string)$num ? 'selected' : '' }}>{{ $namaBulan }}</option>
                         @endforeach
                     </select>
+                    <select name="zona_layanan" id="kebakaran_filter_zona_layanan" class="form-select form-select-sm" style="width:125px;">
+                        <option value="">Semua Zona</option>
+                        @foreach($zonaLayanans as $zona)
+                            <option value="{{ $zona }}">{{ $zona }}</option>
+                        @endforeach
+                    </select>
                     <select name="kecamatan_id" id="kebakaran_filter_kecamatan" class="form-select form-select-sm" style="width:145px;">
                         <option value="">Semua Kecamatan</option>
                         @foreach($kecamatans as $kec)
@@ -262,7 +281,7 @@
                     </select>
                     <select name="kategori_objek_id" id="kebakaran_filter_kategori_objek" class="form-select form-select-sm" style="width:130px;">
                         <option value="">Semua Objek</option>
-                        @foreach($kategoriObjeks as $obj)
+                        @foreach($kategoriObjekKebakaran as $obj)
                             <option value="{{ $obj->id }}" {{ (string)($kategoriObjekId ?? '') === (string)$obj->id ? 'selected' : '' }}>{{ $obj->nama_kategori }}</option>
                         @endforeach
                     </select>
@@ -403,6 +422,12 @@
                             <option value="{{ $num }}" {{ (string)($bulan ?? '') === (string)$num ? 'selected' : '' }}>{{ $namaBulan }}</option>
                         @endforeach
                     </select>
+                    <select name="zona_layanan" id="rescue_filter_zona_layanan" class="form-select form-select-sm" style="width:125px;">
+                        <option value="">Semua Zona</option>
+                        @foreach($zonaLayanans as $zona)
+                            <option value="{{ $zona }}">{{ $zona }}</option>
+                        @endforeach
+                    </select>
                     <select name="kecamatan_id" id="rescue_filter_kecamatan" class="form-select form-select-sm" style="width:145px;">
                         <option value="">Semua Kecamatan</option>
                         @foreach($kecamatans as $kec)
@@ -411,7 +436,7 @@
                     </select>
                     <select name="kategori_objek_id" id="rescue_filter_kategori_objek" class="form-select form-select-sm" style="width:145px;">
                         <option value="">Semua Objek / Kasus</option>
-                        @foreach($kategoriObjeks as $obj)
+                        @foreach($kategoriObjekRescue as $obj)
                             <option value="{{ $obj->id }}" {{ (string)($kategoriObjekId ?? '') === (string)$obj->id ? 'selected' : '' }}>{{ $obj->nama_kategori }}</option>
                         @endforeach
                     </select>

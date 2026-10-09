@@ -46,6 +46,9 @@ class ChartDataController extends Controller
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
             ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 // Kelompokkan berdasarkan nomor bulan (1-12)
@@ -89,6 +92,9 @@ class ChartDataController extends Controller
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
             ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return Carbon::parse($item->tanggal_waktu_kejadian)->format('n');
@@ -122,11 +128,15 @@ class ChartDataController extends Controller
         $data = KejadianKebakaran::with('kategoriObjek')
             ->verifiedOnly()
             ->where('jenis_layanan', 'darurat')
+            ->whereHas('kategoriObjek', fn($q) => $q->where('jenis_layanan', 'kebakaran'))
             ->whereYear('tanggal_waktu_kejadian', $tahun)
             ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
             ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kategoriObjek ? $item->kategoriObjek->nama_kategori : 'Lain-lain';
@@ -160,6 +170,9 @@ class ChartDataController extends Controller
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
             ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kategoriPenyebab ? $item->kategoriPenyebab->nama_penyebab : 'Belum diketahui';
@@ -193,6 +206,9 @@ class ChartDataController extends Controller
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
             ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kecamatan ? $item->kecamatan->nama_kecamatan : 'Tidak Diketahui';
@@ -221,11 +237,15 @@ class ChartDataController extends Controller
         $data = KejadianKebakaran::with('kategoriObjek')
             ->verifiedOnly()
             ->where('jenis_layanan', 'non_darurat')
+            ->whereHas('kategoriObjek', fn($q) => $q->where('jenis_layanan', 'rescue'))
             ->whereYear('tanggal_waktu_kejadian', $tahun)
             ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
             ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kategoriObjek ? $item->kategoriObjek->nama_kategori : 'Lain-lain';
@@ -259,6 +279,9 @@ class ChartDataController extends Controller
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
             ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kecamatan ? $item->kecamatan->nama_kecamatan : 'Tidak Diketahui';
@@ -296,6 +319,9 @@ class ChartDataController extends Controller
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
             ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get();
 
         $kebakaran = array_fill(0, 12, 0);
@@ -350,7 +376,10 @@ class ChartDataController extends Controller
             ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
             ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
-            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')));
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            });
 
         $totalKebakaran     = (clone $baseQuery)->where('jenis_layanan', 'darurat')->count();
         $totalRescue        = (clone $baseQuery)->where('jenis_layanan', 'non_darurat')->count();

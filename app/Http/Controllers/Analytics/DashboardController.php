@@ -18,11 +18,23 @@ class DashboardController extends Controller
         $kecamatanId        = $request->input('kecamatan_id');
         $kategoriObjekId    = $request->input('kategori_objek_id');
         $kategoriPenyebabId = $request->input('kategori_penyebab_id');
+        $zonaLayanan        = $request->input('zona_layanan');
 
         // Master data untuk opsi filter
-        $kecamatans        = Kecamatan::orderBy('nama_kecamatan')->get();
-        $kategoriObjeks    = KategoriObjek::orderBy('nama_kategori')->get();
-        $kategoriPenyebabs = KategoriPenyebab::orderBy('nama_penyebab')->get();
+        $kecamatans             = Kecamatan::orderBy('nama_kecamatan')->get();
+        $kategoriObjeks         = KategoriObjek::orderBy('nama_kategori')->get();
+        $kategoriObjekKebakaran = KategoriObjek::where('jenis_layanan', 'kebakaran')->orderBy('nama_kategori')->get();
+        $kategoriObjekRescue    = KategoriObjek::where('jenis_layanan', 'rescue')->orderBy('nama_kategori')->get();
+        $kategoriPenyebabs      = KategoriPenyebab::orderBy('nama_penyebab')->get();
+
+        // Daftar zona layanan baku (WMK)
+        $zonaLayanans = [
+            'WMK Pusat',
+            'WMK UPTD 1',
+            'WMK UPTD 2',
+            'WMK UPTD 3',
+            'Luar Daerah',
+        ];
 
         // Query dasar KPI dengan filter aktif
         $baseQuery = KejadianKebakaran::verifiedOnly()
@@ -30,7 +42,10 @@ class DashboardController extends Controller
             ->when($bulan, fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $bulan))
             ->when($kecamatanId, fn($q) => $q->where('kecamatan_id', $kecamatanId))
             ->when($kategoriObjekId, fn($q) => $q->where('kategori_objek_id', $kategoriObjekId))
-            ->when($kategoriPenyebabId, fn($q) => $q->where('kategori_penyebab_id', $kategoriPenyebabId));
+            ->when($kategoriPenyebabId, fn($q) => $q->where('kategori_penyebab_id', $kategoriPenyebabId))
+            ->when($zonaLayanan && $zonaLayanan !== 'Semua', function($q) use ($zonaLayanan) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $zonaLayanan));
+            });
 
         $totalKebakaran = (clone $baseQuery)
             ->where('jenis_layanan', 'darurat')
@@ -71,8 +86,12 @@ class DashboardController extends Controller
             'kecamatanId',
             'kategoriObjekId',
             'kategoriPenyebabId',
+            'zonaLayanan',
+            'zonaLayanans',
             'kecamatans',
             'kategoriObjeks',
+            'kategoriObjekKebakaran',
+            'kategoriObjekRescue',
             'kategoriPenyebabs',
             'totalSeluruhKejadian',
             'totalKebakaran',
