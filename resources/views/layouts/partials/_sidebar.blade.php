@@ -92,6 +92,17 @@
                     </a>
                 </div>
 
+                @auth
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('hidran.*') ? 'active' : '' }}" href="{{ route('hidran.map') }}">
+                            <span class="menu-icon">
+                                <i class="ki-duotone ki-geolocation fs-2"><span class="path1"></span><span class="path2"></span></i>
+                            </span>
+                            <span class="menu-title">Peta Hidran</span>
+                        </a>
+                    </div>
+                @endauth
+
                 {{-- SECTION 2: ADMINISTRATOR --}}
                 @auth
                     @if(auth()->user()->role === 'admin')

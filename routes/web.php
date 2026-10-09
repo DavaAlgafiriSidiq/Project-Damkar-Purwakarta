@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Analytics\DashboardController;
 use App\Http\Controllers\Analytics\ChartDataController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HidranController;
 use App\Http\Controllers\Petugas\KejadianKebakaranController as PetugasKejadianController;
 use App\Http\Controllers\Admin\VerifikasiKejadianController as AdminVerifikasiController;
 use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
@@ -21,6 +22,13 @@ Route::get('/', function () {
 
 // Modul Analitik (Dashboard Publik)
 Route::get('/dashboard-analitik', [DashboardController::class, 'index'])->name('analytics.dashboard');
+
+// ── Peta Hidran (Admin & Petugas) ───────────────────────────────────────
+Route::middleware(['auth', 'role:admin,petugas'])->prefix('hidran')->name('hidran.')->group(function () {
+    Route::view('/map', 'hidran.map')->name('map');
+    Route::get('/data', [HidranController::class, 'apiIndex'])->name('data');
+    Route::get('/nearest', [HidranController::class, 'nearest'])->name('nearest');
+});
 
 // Endpoint JSON untuk Chart
 Route::prefix('api/analytics')->name('analytics.chart.')->group(function () {
