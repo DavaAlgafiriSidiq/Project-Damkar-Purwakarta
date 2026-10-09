@@ -16,8 +16,8 @@ use Illuminate\Notifications\Notifiable;
  *   - admin   : Administrator/Humas yang berwenang memverifikasi laporan
  *   - petugas : Petugas lapangan yang bertugas menginput kejadian
  *
- * PENTING: Kolom 'role' WAJIB ada di $fillable agar UserSeeder dan
- * pembuatan akun lewat mass assignment berjalan dengan benar.
+ * PENTING: Kolom 'role' sengaja dikeluarkan dari $fillable demi keamanan
+ * untuk mencegah eskalasi hak akses (Mass Assignment Vulnerability).
  */
 class User extends Authenticatable
 {
@@ -26,7 +26,7 @@ class User extends Authenticatable
 
     /**
      * Kolom yang boleh diisi lewat mass assignment.
-     * 'role' wajib disertakan agar UserSeeder dapat mengisi role saat pertama kali dibuat.
+     * Kolom 'role' sengaja tidak dimasukkan ke $fillable demi keamanan (mencegah eskalasi hak akses).
      *
      * @var array<int, string>
      */
@@ -34,7 +34,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // Wajib: digunakan oleh UserSeeder dan RoleMiddleware
     ];
 
     /**

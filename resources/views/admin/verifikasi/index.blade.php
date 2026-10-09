@@ -31,6 +31,20 @@
         </div>
     @endif
 
+    {{-- Flash Message Error --}}
+    @if(session('error'))
+        <div class="alert alert-dismissible bg-light-danger border border-danger d-flex flex-column flex-sm-row p-5 mb-7 shadow-xs">
+            <i class="ki-duotone ki-information-5 fs-2hx text-danger me-4 mb-5 mb-sm-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+            <div class="d-flex flex-column pe-0 pe-sm-10">
+                <h5 class="mb-1 text-danger">Operasi Ditolak!</h5>
+                <span class="text-danger fs-7">{{ session('error') }}</span>
+            </div>
+            <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
+                <i class="ki-duotone ki-cross fs-1 text-danger"><span class="path1"></span><span class="path2"></span></i>
+            </button>
+        </div>
+    @endif
+
     {{-- ── BARIS 1: KPI STATISTIK GLOBAL ── --}}
     {{-- Catatan: JANGAN pakai card-xl-stretch. Rule bawaan
          @media (min-width:1200px){ .card.card-xl-stretch{height:calc(100% - var(--bs-gutter-y))} }
@@ -351,23 +365,45 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="text-gray-800 fw-semibold fs-7">{{ $item->pelapor->name ?? 'Petugas Lapangan' }}</span>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-gray-800 fw-semibold fs-7">{{ $item->pelapor->name ?? 'Petugas Lapangan' }}</span>
+                                        @if($item->nama_pelapor)
+                                            <span class="badge badge-light-warning text-warning fw-bold fs-8 mt-1">
+                                                <i class="ki-duotone ki-user fs-8 me-1"><span class="path1"></span><span class="path2"></span></i>
+                                                {{ $item->nama_pelapor }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted fs-8 fst-italic">— (data lama)</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="text-end">
                                     <span class="text-dark fw-bold">Rp {{ number_format($item->taksiran_kerugian, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
-                                    @if ($item->status_verifikasi === 'verified')
-                                        <span class="badge badge-light-success fw-bold px-3 py-2">
-                                            <i class="ki-duotone ki-verify fs-7 me-1 text-success"><span class="path1"></span><span class="path2"></span></i>
-                                            Terverifikasi
-                                        </span>
-                                    @else
-                                        <span class="badge badge-light-warning fw-bold px-3 py-2">
-                                            <i class="ki-duotone ki-time fs-7 me-1 text-warning"><span class="path1"></span><span class="path2"></span></i>
-                                            Draft
-                                        </span>
-                                    @endif
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        {{-- Badge Status Operasi Lapangan --}}
+                                        @if ($item->status_operasi === 'dalam_penanganan')
+                                            <span class="badge badge-light-warning text-warning fw-bolder px-2 py-1 fs-8 border border-warning border-dashed" title="Operasi masih aktif di lapangan">
+                                                🟡 Penanganan
+                                            </span>
+                                        @else
+                                            <span class="badge badge-light-success text-success fw-bold px-2 py-1 fs-8" title="Operasi telah selesai">
+                                                🟢 Selesai
+                                            </span>
+                                        @endif
+
+                                        {{-- Status Verifikasi Dokumen --}}
+                                        @if ($item->status_verifikasi === 'verified')
+                                            <span class="badge badge-light-success fw-semibold px-2 py-1 fs-9">
+                                                Terverifikasi
+                                            </span>
+                                        @else
+                                            <span class="badge badge-light-secondary text-muted fw-semibold px-2 py-1 fs-9">
+                                                Draft
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end gap-2">

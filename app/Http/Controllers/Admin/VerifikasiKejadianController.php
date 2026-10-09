@@ -178,6 +178,13 @@ class VerifikasiKejadianController extends Controller
             'jumlah_personel'        => ['nullable', 'integer', 'min:0'],
             'taksiran_kerugian'      => ['nullable', 'numeric', 'min:0'],
             'taksiran_terselamatkan' => ['nullable', 'numeric', 'min:0'],
+            'korban_meninggal'       => ['nullable', 'integer', 'min:0'],
+            'korban_luka_berat'      => ['nullable', 'integer', 'min:0'],
+            'korban_luka_ringan'     => ['nullable', 'integer', 'min:0'],
+            'kk_terdampak'           => ['nullable', 'integer', 'min:0'],
+            'jiwa_terdampak'         => ['nullable', 'integer', 'min:0'],
+            'status_operasi'         => ['required', 'in:dalam_penanganan,selesai'],
+            'tanggal_waktu_selesai'  => ['nullable', 'required_if:status_operasi,selesai', 'date'],
             'deskripsi'              => ['nullable', 'string', 'max:2000'],
             'status_verifikasi'      => ['required', 'in:draft,verified'],
         ]);
@@ -190,6 +197,10 @@ class VerifikasiKejadianController extends Controller
             $diverifikasiPada = now();
         }
 
+        $statusOperasi = $validated['status_operasi'] ?? 'dalam_penanganan';
+        $waktuSelesai = $statusOperasi === 'selesai' ? ($validated['tanggal_waktu_selesai'] ?? null) : null;
+
+        // Update kolom yang ada di $fillable via mass assignment
         $laporan->update([
             'jenis_layanan'          => $validated['jenis_layanan'],
             'tanggal_waktu_kejadian' => $validated['tanggal_waktu_kejadian'],
@@ -201,11 +212,21 @@ class VerifikasiKejadianController extends Controller
             'jumlah_personel'        => $validated['jumlah_personel'] ?? 0,
             'taksiran_kerugian'      => $validated['taksiran_kerugian'] ?? 0,
             'taksiran_terselamatkan' => $validated['taksiran_terselamatkan'] ?? 0,
+            'korban_meninggal'       => $validated['korban_meninggal'] ?? 0,
+            'korban_luka_berat'      => $validated['korban_luka_berat'] ?? 0,
+            'korban_luka_ringan'     => $validated['korban_luka_ringan'] ?? 0,
+            'kk_terdampak'           => $validated['kk_terdampak'] ?? 0,
+            'jiwa_terdampak'         => $validated['jiwa_terdampak'] ?? 0,
+            'status_operasi'         => $statusOperasi,
+            'tanggal_waktu_selesai'  => $waktuSelesai,
             'deskripsi'              => $validated['deskripsi'] ?? null,
-            'status_verifikasi'      => $validated['status_verifikasi'],
-            'diverifikasi_oleh'      => $diverifikasiOleh,
-            'diverifikasi_pada'      => $diverifikasiPada,
         ]);
+
+        // Kolom verifikasi di-set langsung (tidak ada di $fillable) — admin only
+        $laporan->status_verifikasi = $validated['status_verifikasi'];
+        $laporan->diverifikasi_oleh = $diverifikasiOleh;
+        $laporan->diverifikasi_pada = $diverifikasiPada;
+        $laporan->save();
 
         return redirect()->route('admin.verifikasi.index')
             ->with('success', "Laporan ID #{$laporan->id} berhasil diperbarui.");
@@ -221,11 +242,10 @@ class VerifikasiKejadianController extends Controller
     {
         $laporan = KejadianKebakaran::findOrFail($id);
 
-        $laporan->update([
-            'status_verifikasi' => 'verified',
-            'diverifikasi_oleh' => auth()->id(),
-            'diverifikasi_pada' => now(),
-        ]);
+        $laporan->status_verifikasi = 'verified';
+        $laporan->diverifikasi_oleh = auth()->id();
+        $laporan->diverifikasi_pada = now();
+        $laporan->save();
 
         return redirect()->back()
             ->with('success', "Laporan ID #{$laporan->id} berhasil diverifikasi (Approved) dan kini aktif pada dashboard publik.");
@@ -240,6 +260,13 @@ class VerifikasiKejadianController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $laporan = KejadianKebakaran::findOrFail($id);
+
+        // Guard Integritas Data: Mencegah penghapusan jika laporan sudah berstatus verified
+        if ($laporan->status_verifikasi === 'verified') {
+            return redirect()->back()
+                ->with('error', 'Data terverifikasi tidak dapat dihapus. Silakan batalkan verifikasi terlebih dahulu jika ada kesalahan fatal.');
+        }
+
         $idHapus = $laporan->id;
         $laporan->delete();
 

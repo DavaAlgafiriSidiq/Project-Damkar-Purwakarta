@@ -42,6 +42,13 @@ class ChartDataController extends Controller
         $data = KejadianKebakaran::verifiedOnly()
             ->where('jenis_layanan', 'darurat')
             ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 // Kelompokkan berdasarkan nomor bulan (1-12)
@@ -81,6 +88,13 @@ class ChartDataController extends Controller
         $data = KejadianKebakaran::verifiedOnly()
             ->where('jenis_layanan', 'non_darurat')
             ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return Carbon::parse($item->tanggal_waktu_kejadian)->format('n');
@@ -114,7 +128,15 @@ class ChartDataController extends Controller
         $data = KejadianKebakaran::with('kategoriObjek')
             ->verifiedOnly()
             ->where('jenis_layanan', 'darurat')
+            ->whereHas('kategoriObjek', fn($q) => $q->where('jenis_layanan', 'kebakaran'))
             ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kategoriObjek ? $item->kategoriObjek->nama_kategori : 'Lain-lain';
@@ -144,6 +166,13 @@ class ChartDataController extends Controller
             ->verifiedOnly()
             ->where('jenis_layanan', 'darurat')
             ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kategoriPenyebab ? $item->kategoriPenyebab->nama_penyebab : 'Belum diketahui';
@@ -173,6 +202,13 @@ class ChartDataController extends Controller
             ->verifiedOnly()
             ->where('jenis_layanan', 'darurat')
             ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kecamatan ? $item->kecamatan->nama_kecamatan : 'Tidak Diketahui';
@@ -201,7 +237,15 @@ class ChartDataController extends Controller
         $data = KejadianKebakaran::with('kategoriObjek')
             ->verifiedOnly()
             ->where('jenis_layanan', 'non_darurat')
+            ->whereHas('kategoriObjek', fn($q) => $q->where('jenis_layanan', 'rescue'))
             ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get()
             ->groupBy(function ($item) {
                 return $item->kategoriObjek ? $item->kategoriObjek->nama_kategori : 'Lain-lain';
@@ -212,6 +256,42 @@ class ChartDataController extends Controller
         return response()->json([
             'labels'   => $data->keys(),
             'datasets' => [['label' => 'Jumlah Rescue', 'data' => $data->values()]],
+        ]);
+    }
+
+    /**
+     * Sebaran kejadian operasi rescue berdasarkan kecamatan.
+     *
+     * Endpoint: GET /api/analytics/sebaran-rescue-per-kecamatan?tahun=YYYY
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sebaranRescuePerKecamatan(Request $request): JsonResponse
+    {
+        $tahun = (int) $request->input('tahun', now()->year);
+
+        $data = KejadianKebakaran::with('kecamatan')
+            ->verifiedOnly()
+            ->where('jenis_layanan', 'non_darurat')
+            ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->kecamatan ? $item->kecamatan->nama_kecamatan : 'Tidak Diketahui';
+            })
+            ->map(function ($group) { return count($group); })
+            ->sortDesc();
+
+        return response()->json([
+            'labels'   => $data->keys(),
+            'datasets' => [['label' => 'Jumlah Operasi Rescue', 'data' => $data->values()]],
         ]);
     }
 
@@ -235,6 +315,13 @@ class ChartDataController extends Controller
         // Ambil semua kejadian terverifikasi tahun tersebut, kelompokkan per bulan + jenis
         $semua = KejadianKebakaran::verifiedOnly()
             ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            })
             ->get();
 
         $kebakaran = array_fill(0, 12, 0);
@@ -283,22 +370,81 @@ class ChartDataController extends Controller
     {
         $tahun = (int) $request->input('tahun', now()->year);
 
-        // Query dasar: hanya data verified pada tahun yang diminta
+        // Query dasar: hanya data verified pada tahun yang diminta beserta filter aktif
         $baseQuery = KejadianKebakaran::verifiedOnly()
-            ->whereYear('tanggal_waktu_kejadian', $tahun);
+            ->whereYear('tanggal_waktu_kejadian', $tahun)
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
+            ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
+            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
+            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
+            ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
+                $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
+            });
 
         $totalKebakaran     = (clone $baseQuery)->where('jenis_layanan', 'darurat')->count();
         $totalRescue        = (clone $baseQuery)->where('jenis_layanan', 'non_darurat')->count();
         $totalKerugian      = (clone $baseQuery)->sum('taksiran_kerugian');
         $totalTerselamatkan = (clone $baseQuery)->sum('taksiran_terselamatkan');
 
+        $totalKarhutla = (clone $baseQuery)
+            ->where('jenis_layanan', 'darurat')
+            ->whereHas('kategoriObjek', function ($q) {
+                $q->where('is_karhutla', true)->orWhere('nama_kategori', 'like', '%Lahan%');
+            })
+            ->count();
+
+        $hotspot = (clone $baseQuery)
+            ->where('jenis_layanan', 'darurat')
+            ->selectRaw('kecamatan_id, count(*) as total')
+            ->groupBy('kecamatan_id')
+            ->orderByDesc('total')
+            ->with('kecamatan')
+            ->first();
+
+        $kecamatanHotspot = ($hotspot && $hotspot->kecamatan) ? $hotspot->kecamatan->nama_kecamatan : '-';
+
         return response()->json([
             'tahun'               => $tahun,
             'total_kebakaran'     => $totalKebakaran,
+            'total_karhutla'      => $totalKarhutla,
             'total_rescue'        => $totalRescue,
             'total_kejadian'      => $totalKebakaran + $totalRescue,
             'total_kerugian'      => $totalKerugian,
             'total_terselamatkan' => $totalTerselamatkan,
+            'kecamatan_hotspot'   => $kecamatanHotspot,
+        ]);
+    }
+
+    /**
+     * Endpoint Live Alert: Mendeteksi insiden aktif yang sedang dalam penanganan di lapangan.
+     * Syarat: status_operasi = 'dalam_penanganan' & tanggal_waktu_kejadian dalam 12 jam terakhir (safety fallback).
+     *
+     * Endpoint: GET /api/analytics/live-alert
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function liveAlert(): JsonResponse
+    {
+        $batasWaktu = now()->subHours(12);
+
+        $kejadian = KejadianKebakaran::where('status_operasi', 'dalam_penanganan')
+            ->where('tanggal_waktu_kejadian', '>=', $batasWaktu)
+            ->with('kecamatan')
+            ->latest('tanggal_waktu_kejadian')
+            ->first();
+
+        if ($kejadian) {
+            return response()->json([
+                'is_active'      => true,
+                'jenis_layanan'  => $kejadian->jenis_layanan,
+                'kecamatan'      => $kejadian->kecamatan->nama_kecamatan ?? 'Purwakarta',
+                'waktu'          => Carbon::parse($kejadian->tanggal_waktu_kejadian)->format('Y-m-d H:i'),
+                'status_operasi' => $kejadian->status_operasi,
+            ]);
+        }
+
+        return response()->json([
+            'is_active' => false,
         ]);
     }
 }

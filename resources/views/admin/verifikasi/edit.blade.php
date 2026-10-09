@@ -89,10 +89,30 @@
                             </select>
                         </div>
 
-                        {{-- 3. Tanggal & Waktu Kejadian --}}
-                        <div class="mb-6">
-                            <label class="required form-label fw-semibold fs-6">Tanggal & Waktu Kejadian</label>
-                            <input type="datetime-local" name="tanggal_waktu_kejadian" class="form-control form-control-solid" value="{{ old('tanggal_waktu_kejadian', $laporan->tanggal_waktu_kejadian ? $laporan->tanggal_waktu_kejadian->format('Y-m-d\TH:i') : '') }}" required />
+                        {{-- 3. Waktu Mulai & Status Operasi --}}
+                        <div class="row g-4 mb-6">
+                            <div class="col-md-6">
+                                <label class="required form-label fw-semibold fs-6">Waktu Mulai Kejadian</label>
+                                <input type="datetime-local" name="tanggal_waktu_kejadian" class="form-control form-control-solid" value="{{ old('tanggal_waktu_kejadian', $laporan->tanggal_waktu_kejadian ? $laporan->tanggal_waktu_kejadian->format('Y-m-d\TH:i') : '') }}" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="required form-label fw-semibold fs-6">Status Operasi Lapangan</label>
+                                <select name="status_operasi" id="selectAdminStatusOperasi" class="form-select form-select-solid" required onchange="handleAdminStatusOperasiChange()">
+                                    <option value="dalam_penanganan" {{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'dalam_penanganan' ? 'selected' : '' }}>
+                                        🟡 Dalam Penanganan
+                                    </option>
+                                    <option value="selesai" {{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'selesai' ? 'selected' : '' }}>
+                                        🟢 Selesai (Padam / Tertangani)
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Waktu Penanganan Selesai --}}
+                        <div class="mb-6" id="wrapperAdminWaktuSelesai" style="{{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'selesai' ? '' : 'display: none;' }}">
+                            <label class="form-label fw-semibold fs-6 text-success">Waktu Penanganan Selesai</label>
+                            <input type="datetime-local" name="tanggal_waktu_selesai" id="inputAdminWaktuSelesai" class="form-control form-control-solid" value="{{ old('tanggal_waktu_selesai', $laporan->tanggal_waktu_selesai ? $laporan->tanggal_waktu_selesai->format('Y-m-d\TH:i') : '') }}" />
+                            <div class="text-muted fs-8 mt-1">Wajib diisi saat status operasi telah dinyatakan Selesai.</div>
                         </div>
 
                         {{-- 4. Kecamatan Lokasi --}}
@@ -135,6 +155,83 @@
                                 @endforeach
                             </select>
                             <div class="text-muted fs-8 mt-1">*Hanya berlaku untuk layanan Kebakaran.</div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- Card Data Korban & Dampak Sosial --}}
+                <div class="card card-flush shadow-sm mb-7">
+                    <div class="card-header pt-6">
+                        <div class="card-title">
+                            <i class="ki-duotone ki-heart-circle fs-2 text-danger me-2"><span class="path1"></span><span class="path2"></span></i>
+                            <h3 class="fw-bold m-0 fs-5">Data Korban & Dampak Sosial</h3>
+                        </div>
+                    </div>
+                    <div class="card-body pt-2">
+                        <div class="text-muted fs-7 mb-5">
+                            Pencatatan rincian korban manusia dan warga terdampak di lokasi insiden. Masukkan angka 0 jika nihil.
+                        </div>
+
+                        {{-- Baris 1: Korban Jiwa & Cedera --}}
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold fs-7 text-gray-700">Luka Ringan</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light-warning text-warning border-0 fw-bold">
+                                        <i class="ki-duotone ki-bandage fs-5 text-warning"><span class="path1"></span><span class="path2"></span></i>
+                                    </span>
+                                    <input type="number" name="korban_luka_ringan" class="form-control form-control-solid" value="{{ old('korban_luka_ringan', $laporan->korban_luka_ringan ?? 0) }}" min="0" placeholder="0" />
+                                    <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold fs-7 text-gray-700">Luka Berat</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light-danger text-danger border-0 fw-bold">
+                                        <i class="ki-duotone ki-cross-circle fs-5 text-danger"><span class="path1"></span><span class="path2"></span></i>
+                                    </span>
+                                    <input type="number" name="korban_luka_berat" class="form-control form-control-solid" value="{{ old('korban_luka_berat', $laporan->korban_luka_berat ?? 0) }}" min="0" placeholder="0" />
+                                    <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold fs-7 text-danger">Meninggal</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-danger text-white border-0 fw-bold">
+                                        <i class="ki-duotone ki-user-cross fs-5 text-white"><span class="path1"></span><span class="path2"></span></i>
+                                    </span>
+                                    <input type="number" name="korban_meninggal" class="form-control form-control-solid text-danger fw-bold" value="{{ old('korban_meninggal', $laporan->korban_meninggal ?? 0) }}" min="0" placeholder="0" />
+                                    <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Baris 2: Populasi Terdampak --}}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7 text-gray-700">KK Terdampak</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light-primary text-primary border-0 fw-bold">
+                                        <i class="ki-duotone ki-home fs-5 text-primary"><span class="path1"></span><span class="path2"></span></i>
+                                    </span>
+                                    <input type="number" name="kk_terdampak" class="form-control form-control-solid" value="{{ old('kk_terdampak', $laporan->kk_terdampak ?? 0) }}" min="0" placeholder="0" />
+                                    <span class="input-group-text bg-light border-0 fs-8 text-gray-600">KK</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7 text-gray-700">Total Jiwa Terdampak</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light-info text-info border-0 fw-bold">
+                                        <i class="ki-duotone ki-people fs-5 text-info"><span class="path1"></span><span class="path2"></span></i>
+                                    </span>
+                                    <input type="number" name="jiwa_terdampak" class="form-control form-control-solid" value="{{ old('jiwa_terdampak', $laporan->jiwa_terdampak ?? 0) }}" min="0" placeholder="0" />
+                                    <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -264,8 +361,27 @@ function sinkronisasiAdminJenisLayanan() {
     }
 }
 
+function handleAdminStatusOperasiChange() {
+    const statusSelect = document.getElementById('selectAdminStatusOperasi');
+    const wrapper = document.getElementById('wrapperAdminWaktuSelesai');
+    const input = document.getElementById('inputAdminWaktuSelesai');
+    if (!statusSelect || !wrapper || !input) return;
+
+    if (statusSelect.value === 'selesai') {
+        wrapper.style.display = 'block';
+        input.disabled = false;
+        input.required = true;
+    } else {
+        wrapper.style.display = 'none';
+        input.disabled = true;
+        input.required = false;
+        input.value = '';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     sinkronisasiAdminJenisLayanan();
+    handleAdminStatusOperasiChange();
 });
 </script>
 @endsection

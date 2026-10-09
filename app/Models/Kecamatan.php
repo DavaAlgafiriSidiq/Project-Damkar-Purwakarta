@@ -23,6 +23,7 @@ class Kecamatan extends Model
     protected $fillable = [
         'zona_layanan_id',
         'nama_kecamatan',
+        'zona_layanan',
     ];
 
     // ─── Relasi ───────────────────────────────────────────────

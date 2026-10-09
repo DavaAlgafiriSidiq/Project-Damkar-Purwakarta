@@ -28,36 +28,42 @@ class KecamatanSeeder extends Seeder
         // karena ID bisa berbeda antar environment (lokal vs staging vs produksi)
         $zonas = ZonaLayanan::pluck('id', 'kode_zona');
 
-        // Pemetaan kecamatan ke zona layanan (FINAL — dokumen resmi Damkar)
-        // Format: 'nama_kecamatan' => 'KODE_ZONA'
+        // Pemetaan kecamatan ke zona layanan baku (aturan 8.10 di ai-context.md)
         $kecamatans = [
             // ── WMK Pusat (Kantor Dinas) ──────────────────────────────
-            'Pasawahan'     => 'PUSAT',
-            'Jatiluhur'     => 'PUSAT',
-            'Purwakarta'    => 'PUSAT',
-            'Babakancikao'  => 'PUSAT',
-            'Sukasari'      => 'PUSAT',
+            'Pasawahan'     => ['kode' => 'PUSAT', 'zona_layanan' => 'WMK Pusat'],
+            'Jatiluhur'     => ['kode' => 'PUSAT', 'zona_layanan' => 'WMK Pusat'],
+            'Purwakarta'    => ['kode' => 'PUSAT', 'zona_layanan' => 'WMK Pusat'],
+            'Babakancikao'  => ['kode' => 'PUSAT', 'zona_layanan' => 'WMK Pusat'],
+            'Sukasari'      => ['kode' => 'PUSAT', 'zona_layanan' => 'WMK Pusat'],
 
             // ── WMK UPTD Wilayah 1 (Pos Plered) ──────────────────────
-            'Darangdan'     => 'UPTD1',
-            'Plered'        => 'UPTD1',
-            'Sukatani'      => 'UPTD1',
-            'Tegalwaru'     => 'UPTD1',
-            'Maniis'        => 'UPTD1',
+            'Darangdan'     => ['kode' => 'UPTD1', 'zona_layanan' => 'WMK UPTD 1'],
+            'Plered'        => ['kode' => 'UPTD1', 'zona_layanan' => 'WMK UPTD 1'],
+            'Sukatani'      => ['kode' => 'UPTD1', 'zona_layanan' => 'WMK UPTD 1'],
+            'Tegalwaru'     => ['kode' => 'UPTD1', 'zona_layanan' => 'WMK UPTD 1'],
+            'Maniis'        => ['kode' => 'UPTD1', 'zona_layanan' => 'WMK UPTD 1'],
 
             // ── WMK UPTD Wilayah 2 (Pos Wanayasa) ────────────────────
-            'Bojong'        => 'UPTD2',
-            'Wanayasa'      => 'UPTD2',
-            'Kiarapedes'    => 'UPTD2',
-            'Pondoksalam'   => 'UPTD2',
+            'Bojong'        => ['kode' => 'UPTD2', 'zona_layanan' => 'WMK UPTD 2'],
+            'Wanayasa'      => ['kode' => 'UPTD2', 'zona_layanan' => 'WMK UPTD 2'],
+            'Kiarapedes'    => ['kode' => 'UPTD2', 'zona_layanan' => 'WMK UPTD 2'],
+            'Pondoksalam'   => ['kode' => 'UPTD2', 'zona_layanan' => 'WMK UPTD 2'],
 
             // ── WMK UPTD Wilayah 3 (Pos Cikopo) ──────────────────────
-            'Cibatu'        => 'UPTD3',
-            'Bungursari'    => 'UPTD3',
-            'Campaka'       => 'UPTD3',
+            'Cibatu'        => ['kode' => 'UPTD3', 'zona_layanan' => 'WMK UPTD 3'],
+            'Bungursari'    => ['kode' => 'UPTD3', 'zona_layanan' => 'WMK UPTD 3'],
+            'Campaka'       => ['kode' => 'UPTD3', 'zona_layanan' => 'WMK UPTD 3'],
+
+            // ── Khusus: Di luar wilayah administratif Purwakarta ──────
+            // Digunakan untuk kejadian lintas batas / mutual aid.
+            'Luar Kabupaten' => ['kode' => 'PUSAT', 'zona_layanan' => 'Luar Daerah'],
         ];
 
-        foreach ($kecamatans as $nama => $kodeZona) {
+        foreach ($kecamatans as $nama => $data) {
+            $kodeZona = $data['kode'];
+            $zonaLayanan = $data['zona_layanan'];
+
             if (!isset($zonas[$kodeZona])) {
                 $this->command->warn("Zona '$kodeZona' tidak ditemukan, skip '$nama'.");
                 continue;
@@ -65,10 +71,13 @@ class KecamatanSeeder extends Seeder
 
             Kecamatan::updateOrCreate(
                 ['nama_kecamatan' => $nama],
-                ['zona_layanan_id' => $zonas[$kodeZona]]
+                [
+                    'zona_layanan_id' => $zonas[$kodeZona],
+                    'zona_layanan'    => $zonaLayanan,
+                ]
             );
         }
 
-        $this->command->info('Kecamatan: ' . count($kecamatans) . ' kecamatan berhasil di-seed (pemetaan zona resmi).');
+        $this->command->info('Kecamatan: ' . count($kecamatans) . ' kecamatan berhasil di-seed dengan zona_layanan baku.');
     }
 }

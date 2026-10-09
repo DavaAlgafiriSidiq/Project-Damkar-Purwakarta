@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HidranController;
 use App\Http\Controllers\Petugas\KejadianKebakaranController as PetugasKejadianController;
 use App\Http\Controllers\Admin\VerifikasiKejadianController as AdminVerifikasiController;
+use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +37,11 @@ Route::prefix('api/analytics')->name('analytics.chart.')->group(function () {
     Route::get('/distribusi-objek-kebakaran', [ChartDataController::class, 'distribusiObjekKebakaran'])->name('distribusi-objek-kebakaran');
     Route::get('/distribusi-penyebab-kebakaran', [ChartDataController::class, 'distribusiPenyebabKebakaran'])->name('distribusi-penyebab-kebakaran');
     Route::get('/sebaran-per-kecamatan', [ChartDataController::class, 'sebaranPerKecamatan'])->name('sebaran-per-kecamatan');
+    Route::get('/sebaran-rescue-per-kecamatan', [ChartDataController::class, 'sebaranRescuePerKecamatan'])->name('sebaran-rescue-per-kecamatan');
     Route::get('/distribusi-jenis-rescue', [ChartDataController::class, 'distribusiJenisRescue'])->name('distribusi-jenis-rescue');
     Route::get('/tren-komparasi-bulanan', [ChartDataController::class, 'trenKomparasiBulanan'])->name('tren-komparasi-bulanan');
     Route::get('/ringkasan-statistik', [ChartDataController::class, 'ringkasanStatistik'])->name('ringkasan-statistik');
+    Route::get('/live-alert', [ChartDataController::class, 'liveAlert'])->name('live-alert');
 });
 
 // ── Authentication ──────────────────────────────────────────────────────
@@ -59,6 +62,9 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::get('/kejadian', [PetugasKejadianController::class, 'index'])->name('kejadian.index');
     Route::get('/kejadian/create', [PetugasKejadianController::class, 'create'])->name('kejadian.create');
     Route::post('/kejadian', [PetugasKejadianController::class, 'store'])->name('kejadian.store');
+    Route::get('/kejadian/{id}/edit', [PetugasKejadianController::class, 'edit'])->name('kejadian.edit');
+    Route::put('/kejadian/{id}', [PetugasKejadianController::class, 'update'])->name('kejadian.update');
+    Route::delete('/kejadian/{id}', [PetugasKejadianController::class, 'destroy'])->name('kejadian.destroy');
 });
 
 
@@ -76,4 +82,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/verifikasi/{id}', [AdminVerifikasiController::class, 'update'])->name('verifikasi.update');
     Route::post('/verifikasi/{id}/approve', [AdminVerifikasiController::class, 'approve'])->name('verifikasi.approve');
     Route::delete('/verifikasi/{id}', [AdminVerifikasiController::class, 'destroy'])->name('verifikasi.destroy');
+
+    // Modul Rekapitulasi Matriks Tahunan (Format Excel)
+    Route::get('/laporan/matriks', [AdminLaporanController::class, 'rekapMatriks'])->name('laporan.matriks');
+    Route::get('/laporan/matriks/export', [AdminLaporanController::class, 'exportExcel'])->name('laporan.matriks.export');
 });

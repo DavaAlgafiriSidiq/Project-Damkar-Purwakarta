@@ -103,6 +103,12 @@
                                                     Verifikasi Data
                                                 </a>
                                             </div>
+                                            <div class="menu-item px-5">
+                                                <a href="{{ route('admin.laporan.matriks') }}" class="menu-link px-5">
+                                                    <i class="ki-duotone ki-document fs-5 me-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+                                                    Rekapitulasi Matriks
+                                                </a>
+                                            </div>
                                         @elseif(auth()->user()->role === 'petugas')
                                             <div class="menu-item px-5">
                                                 <a href="{{ route('petugas.kejadian.create') }}" class="menu-link px-5">
