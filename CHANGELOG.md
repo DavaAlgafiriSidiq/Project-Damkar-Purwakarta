@@ -1,10 +1,46 @@
 # Changelog
 
-Semua perubahan penting pada proyek Sistem Pencatatan & Dashboard Analitik Damkar Purwakarta dicatat dalam berkas ini.
+Semua perubahan penting pada proyek Sistem Pencatatan & Dashboard Analitik Damkar Purwakarta dicatat dalam berkas ini. Format berkas ini mengacu pada standar hierarki berbasis Bahasa Indonesia.
+
+## [Unreleased] - 2026-10-09
+
+### Perbaikan (Fixed)
+- **Sinkronisasi Ikon Dropdown & Koreksi Mapping Kategori ([dashboard.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/analytics/dashboard.blade.php), [create.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/petugas/create.blade.php), [edit.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/petugas/edit.blade.php), [admin/verifikasi/edit.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/verifikasi/edit.blade.php)):**
+  - Menyamakan logika pemetaan `data-icon` pada perulangan Kategori Objek dan Dugaan Penyebab di Dashboard Analitik secara 100% identik dengan form Input Kejadian dan Verifikasi Admin.
+  - Mengeliminasi ikon checkmark generik (`ki-shield-tick`) pada opsi dan fallback dropdown, menggantinya dengan ikon semantik presisi: `ki-duotone ki-electricity` (listrik, tower, genset), `las la-paw` (semua hewan & peternakan), `ki-duotone ki-home-2` (bangunan/rumah), `ki-duotone ki-shop` (pasar/toko), `ki-duotone ki-bank` (sekolah/kantor/RS), `las la-wind` (angin puting beliung), dan `las la-life-ring` (penyelamatan/rescue).
+  - Memperbaiki bug ikon hilang pada penyebab kompor tradisional/hawu dengan mengganti class invalid `las la-burn` menjadi `las la-fire` yang valid di LineAwesome.
+- **Perbaikan Visual Ikon & Kontras Select2 ([layouts/app.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/layouts/app.blade.php)):**
+  - Memastikan aturan CSS peredupan opacity dan warna pudar HANYA berlaku pada elemen dengan atribut `[aria-disabled="true"]` atau class `.is-disabled`.
+  - Mengunci kontras solid untuk seluruh opsi normal yang dapat dipilih (`opacity: 1 !important; color: #4B5675 !important;` pada ikon dan `#252F4A !important;` pada teks label), menghapus class `text-gray-600` yang membuat tampilan opsi tampak redup/disabled.
+  - Mempertahankan dan menegaskan efek hover/highlight: latar belakang biru terang (`#F1FAFF`) serta perubahan warna teks dan ikon menjadi biru primer (`#009EF7`) saat disorot kursor untuk memperjelas status interaktif (*selectable*).
+- **Penataan Urutan Dropdown & Pemisahan Disabled ([dashboard.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/analytics/dashboard.blade.php), [layouts/app.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/layouts/app.blade.php), form input):**
+  - Memastikan opsi `-- Pilih Semua Objek --` dan `-- Pilih Semua Penyebab --` (`<option value="">`) selalu dirender dan berada di urutan teratas (indeks 1) pada setiap dropdown filter Dashboard Analitik.
+  - Memaksa opsi nonaktif (`disabled`) dan judul pemisah kategori turun ke urutan paling bawah dropdown (DOM reordering dan CSS `order: 99`).
+  - Menerapkan pengurutan alfabetis dengan opsi "Lain-lain" / "Lainnya" selalu berada di paling akhir via scope `orderWithLainLast()`.
+- **Interaktivitas Dependen Zona & Kecamatan ([dashboard.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/analytics/dashboard.blade.php)):**
+  - Menerapkan logika dependen zona &rarr; kecamatan: memilih zona tertentu otomatis menyembunyikan kecamatan di luar zona tersebut dan me-reset pilihan kecamatan.
+  - Mengurutkan kecamatan berdasarkan zona layanan baku (WMK Pusat, UPTD 1-3, dan Luar Kabupaten) via scope `orderByZona()`.
+- **Cakupan Filter Zona Layanan Matriks ([LaporanController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Admin/LaporanController.php)):**
+  - Menjaga integritas Tabel 1 (Distribusi Wilayah) agar selalu menampilkan 18 kecamatan lengkap tanpa terpotong oleh filter zona layanan (format baku dinas).
+  - Menerapkan filter zona layanan secara ketat membatasi data pada Tabel 2 (Pemadaman Kebakaran) dan Tabel 3 (Penyelamatan/Rescue).
+
+### Perubahan (Changed)
+- **Modernisasi Dropdown (Select2 dengan Ikon Dinamis):**
+  - Mengganti seluruh form `<select>` bawaan browser pada modul Dashboard Analitik, Rekapitulasi Matriks, Riwayat Petugas, serta Form Input & Verifikasi Kejadian dengan komponen *Select2* (Metronic 8).
+  - Menyeragamkan seluruh ikon filter waktu (tahun & bulan) menggunakan ikon kalender bawaan template Metronic (`ki-duotone ki-calendar`).
+  - Menambahkan teks label deskriptif `Saring Data Berdasarkan:` disertai ikon filter di atas baris kontrol filter pada ketiga seksi Dashboard Analitik.
+- **Harmonisasi Desain Kartu KPI & Ringkasan (Soft / Pastel Theme):**
+  - Menghilangkan gaya border putus-putus (`border-dashed`) dengan warna neon mencolok pada seluruh kartu ringkasan KPI.
+  - Mengganti kartu KPI menjadi card pastel lembut tanpa border (`border-0`), bayangan halus (`shadow-xs`), dan sudut melengkung modern (`rounded-3`).
+- **Restrukturisasi Hierarki & Layout Dashboard:**
+  - Mengoptimasi grid sistem 5 kolom seimbang di layar desktop (`row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-4`).
+  - Merapikan padding dan margin chart agar padat (*compact*), teratur, dan profesional.
+
+---
 
 ## [Unreleased] - 2026-10-08
 
-### Fixed & Refactored
+### Perbaikan & Refaktor (Fixed & Refactored)
 - **Penghapusan Hardcode Kategori (`LaporanController.php`):**
   - Menghapus ketergantungan `whereIn('id', range(1, 9))` dan `whereIn('id', range(10, 22))` pada agregasi matriks rekapitulasi.
   - Mengubah query menjadi dinamis menggunakan kolom `jenis_layanan`:
@@ -21,170 +57,74 @@ Semua perubahan penting pada proyek Sistem Pencatatan & Dashboard Analitik Damka
   - Menghapus `resources/views/layouts/partials/header.blade.php` (sisa demo Metronic yang tidak digunakan).
   - Menghapus `resources/views/welcome.blade.php` (sisa template bawaan Laravel).
 
-### Added
+### Penambahan (Added)
 - **Fitur Ekspor Rekapitulasi Matriks ke File Excel (.xlsx):**
-  - **Library Integration:** Mengintegrasikan `maatwebsite/excel` (v4.0.3) dengan `phpoffice/phpspreadsheet` (v5.10.0) untuk kompilasi lembar kerja spreadsheet berformat native `.xlsx`.
+  - **Integrasi Library:** Mengintegrasikan `maatwebsite/excel` (v4.0.3) dengan `phpoffice/phpspreadsheet` (v5.10.0) untuk kompilasi lembar kerja spreadsheet berformat native `.xlsx`.
   - **Arsitektur Multi-Sheet Export:**
     - Membuat class induk [RekapMatriksExport.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Exports/RekapMatriksExport.php) yang mengimplementasikan `Maatwebsite\Excel\Concerns\Export` dan `Maatwebsite\Excel\Concerns\WithMultipleSheets`.
-    - Membuat 3 sheet dedicated yang mengimplementasikan `FromView`, `WithTitle`, dan `ShouldAutoSize`:
+    - Membuat 3 sheet dedicated:
       1. [RekapWilayahSheet.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Exports/Sheets/RekapWilayahSheet.php) &rarr; Sheet *1. Wilayah Kecamatan* ([wilayah.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/excel/wilayah.blade.php))
       2. [RekapKebakaranSheet.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Exports/Sheets/RekapKebakaranSheet.php) &rarr; Sheet *2. Pemadaman Kebakaran* ([kebakaran.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/excel/kebakaran.blade.php))
       3. [RekapRescueSheet.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Exports/Sheets/RekapRescueSheet.php) &rarr; Sheet *3. Operasi Penyelamatan* ([rescue.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/excel/rescue.blade.php))
-    - Masing-masing sheet dilengkapi header dinas resmi, styling warna tematik (Biru Wilayah, Merah/Oranye Kebakaran, Biru Tua Penyelamatan), border tabel standar, lebar kolom otomatis, dan footer total akumulasi.
+    - Masing-masing sheet dilengkapi header dinas resmi, styling warna tematik, border tabel standar, lebar kolom otomatis, dan footer total akumulasi.
   - **Backend Controller & Routing:**
     - Menambahkan method `exportExcel(Request $request)` dan refaktorisasi `getMatriksData(int $tahun, ?string $zonaLayanan)` di [Admin\LaporanController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Admin/LaporanController.php).
     - Menghasilkan nama file rapi secara dinamis: `Rekap_Kejadian_Damkar_{tahun}.xlsx` (atau `Rekap_Kejadian_Damkar_{tahun}_{zona_slug}.xlsx` jika difilter per zona).
     - Mendaftarkan rute `GET /admin/laporan/matriks/export` dengan nama `admin.laporan.matriks.export` di [routes/web.php](file:///c:/xampp/htdocs/Project%20Damkar/routes/web.php).
   - **Frontend Binding:**
-    - Memperbarui tombol aksi pada [admin/laporan/matriks.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/matriks.blade.php) menjadi tag `<a>` tombol "Ekspor Excel (.xlsx)" yang otomatis meneruskan query parameters aktif (`?tahun=...&zona_layanan=...`) ke rute unduhan.
-- **Restrukturisasi Matriks Rekapitulasi Tahunan & Pemisahan Data Murni (Format Excel Dinas Damkar):**
-  - **Pemisahan Fisik Operasi Kebakaran vs Penyelamatan:** Memisahkan data murni agar tidak ada kerancuan objek non-api pada penyebab kebakaran:
+    - Memperbarui tombol aksi pada [admin/laporan/matriks.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/matriks.blade.php) menjadi tombol unduhan yang meneruskan query parameters aktif (`?tahun=...&zona_layanan=...`).
+- **Restrukturisasi Matriks Rekapitulasi Tahunan (Format Excel Dinas Damkar):**
+  - **Pemisahan Operasi Kebakaran vs Penyelamatan:** Memisahkan data murni agar tidak ada kerancuan objek non-api pada penyebab kebakaran:
     1. *Tab 1: Distribusi Wilayah (Kecamatan):* Mengagregasi seluruh kejadian (Kebakaran + Rescue) per kecamatan per bulan (1-12) dan total tahunan.
-    2. *Tab 2: Operasi Pemadaman Kebakaran (Murni Darurat):* Memuat 2 tabel vertikal terpisah — (Tabel 2.A) Berdasarkan Objek Kebakaran (Bangunan, Hutan & Lahan, Sarana) dan (Tabel 2.B) Berdasarkan Dugaan Penyebab Api (11 faktor asal mula api).
-    3. *Tab 3: Operasi Penyelamatan / Rescue (Murni Non-Darurat):* Memuat 1 tabel berdasarkan jenis kasus penyelamatan (Penyelamatan Hewan Liar & Evakuasi Khusus).
-    4. *Konsistensi Matematika:* Total Pemadaman Kebakaran + Total Penyelamatan = Total Seluruh Insiden Wilayah.
+    2. *Tab 2: Operasi Pemadaman Kebakaran (Murni Darurat):* Memuat 2 tabel vertikal — Tabel 2.A (Objek Kebakaran) dan Tabel 2.B (Dugaan Penyebab Api).
+    3. *Tab 3: Operasi Penyelamatan / Rescue (Murni Non-Darurat):* Memuat 1 tabel berdasarkan jenis kasus penyelamatan (Penyelamatan Hewan & Evakuasi Khusus).
   - **Database Migration & Seeder Zona Layanan (WMK):**
-    - Migration `2026_10_08_033938_add_zona_layanan_to_kecamatan_table.php` menambahkan kolom `zona_layanan` (`string`, `nullable`) pada tabel `kecamatan`.
-    - Memperbarui [KecamatanSeeder.php](file:///c:/xampp/htdocs/Project%20Damkar/database/seeders/KecamatanSeeder.php) untuk memetakan 18 kecamatan ke 5 zona operasional baku sesuai aturan 8.10 di `ai-context.md` (`WMK Pusat`, `WMK UPTD 1`, `WMK UPTD 2`, `WMK UPTD 3`, dan `Luar Daerah`).
-  - **Fitur Filter Zona Layanan Dinamis:**
-    - [Admin\LaporanController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Admin/LaporanController.php) mendukung filter parameter `$request->zona_layanan` yang secara dinamis menyaring data wilayah, kebakaran, dan rescue.
-    - Menambahkan dropdown filter "Zona Layanan" di header tabel [admin/laporan/matriks.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/laporan/matriks.blade.php) berdampingan dengan filter "Pilih Tahun".
-  - **Translasi Istilah Baku:** Menggunakan terminologi Bahasa Indonesia baku: "Bangunan" (sebelumnya Struktur), "Penyelamatan Hewan" (sebelumnya Animal), "Evakuasi Khusus" (sebelumnya Rescue), "Hutan & Lahan" (sebelumnya Karhutla), dan "Perbantuan" (Mutual Aid).
-  - **Pembaruan Ikon Sidebar:** Mengganti ikon menu Rekapitulasi Matriks pada [layouts/partials/_sidebar.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/layouts/partials/_sidebar.blade.php) dan [layouts/app.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/layouts/app.blade.php) menjadi `ki-document`.
-
+    - Migration `2026_10_08_033938_add_zona_layanan_to_kecamatan_table.php` menambahkan kolom `zona_layanan` pada tabel `kecamatan`.
+    - Memperbarui [KecamatanSeeder.php](file:///c:/xampp/htdocs/Project%20Damkar/database/seeders/KecamatanSeeder.php) untuk memetakan 18 kecamatan ke 5 zona operasional (`WMK Pusat`, `WMK UPTD 1`, `WMK UPTD 2`, `WMK UPTD 3`, dan `Luar Daerah`).
+  - **Filter Zona Layanan Dinamis:**
+    - Menambahkan dropdown filter "Zona Layanan" di header tabel matriks berdampingan dengan filter tahun.
 - **Akuntabilitas Akun Bersama (`nama_pelapor`):**
-  - **Database Migration:** Migration `2026_10_08_000001_add_nama_pelapor_to_kejadian_kebakaran_table.php` menambahkan kolom `nama_pelapor` (`string(100)`, `nullable`) pada tabel `kejadian_kebakaran`.
-  - **Model Eloquent:** Menambahkan `nama_pelapor` ke dalam `$fillable` model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php).
-  - **Backend Validation:** Validasi wajib diisi (`required`, `string`, `max:100`) pada method `store()` dan `update()` di [Petugas\KejadianKebakaranController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Petugas/KejadianKebakaranController.php).
-  - **Frontend Metronic 8:** Menambahkan input field "Nama Pelapor / Danru" dengan border aksen peringatan akun bersama pada [create.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/petugas/create.blade.php) dan [edit.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/petugas/edit.blade.php) modul Petugas.
-  - **Admin Interface:** Menampilkan badge nama Danru / pelapor fisik di bawah nama akun sistem pada kolom Pelapor di tabel daftar verifikasi [admin/verifikasi/index.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/admin/verifikasi/index.blade.php).
-
-- **Soft Deletes pada Laporan Kejadian:**
-  - **Database Migration:** Migration `2026_10_08_000002_add_soft_deletes_to_kejadian_kebakaran_table.php` menambahkan kolom `deleted_at` pada tabel `kejadian_kebakaran`.
-  - **Model Eloquent:** Menambahkan trait `Illuminate\Database\Eloquent\SoftDeletes` pada model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php) agar data yang dihapus tetap tersimpan dan dapat diaudit.
-
-- **Sistem Audit Log Otomatis:**
-  - **Database Migration:** Migration `2026_10_08_000003_create_audit_logs_table.php` membuat tabel `audit_logs` (`id`, `user_id`, `action`, `model_type`, `model_id`, `old_values`, `new_values`, `created_at`).
-  - **Model Eloquent:** Membuat model [AuditLog.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/AuditLog.php) dengan relasi `user()` dan casts array JSON.
-  - **Eloquent Observers (`booted`):** Mendaftarkan lifecycle hooks pada model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php) untuk mencatat log otomatis setiap ada mutasi: `created` (snapshot atribut baru), `updated` (mencatat dirty changes dan nilai lama yang berubah), serta `deleted` (snapshot sebelum dihapus).
-
+  - Menambahkan kolom `nama_pelapor` pada tabel `kejadian_kebakaran` via migration `2026_10_08_000001_add_nama_pelapor_to_kejadian_kebakaran_table.php`.
+  - Validasi wajib isi pada controller petugas dan admin, serta input form dengan border aksen peringatan akun bersama.
+- **Soft Deletes & Audit Log Otomatis:**
+  - Menambahkan kolom `deleted_at` via migration `2026_10_08_000002_add_soft_deletes_to_kejadian_kebakaran_table.php`.
+  - Membuat sistem audit log otomatis (`audit_logs`) via migration `2026_10_08_000003_create_audit_logs_table.php` dan lifecycle hooks Eloquent Observers.
 - **Data Master Wilayah "Luar Kabupaten":**
-  - **Seeder:** Menambahkan entri `'Luar Kabupaten' => 'PUSAT'` pada [KecamatanSeeder.php](file:///c:/xampp/htdocs/Project%20Damkar/database/seeders/KecamatanSeeder.php) untuk menampung kejadian di luar wilayah administratif yang memerlukan perbantuan (mutual aid) Damkar Purwakarta.
+  - Menambahkan entri `'Luar Kabupaten' => 'PUSAT'` untuk menampung bantuan mutual aid di luar wilayah Purwakarta.
 
-### Security & Hardening
+### Keamanan & Proteksi Sistem (Security & Hardening)
 - **Model Security ($fillable & Mass Assignment Guard):**
-  - Menghapus kolom `role` dari `$fillable` model [User.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/User.php) untuk mencegah eskalasi hak akses ilegal.
+  - Menghapus kolom `role` dari `$fillable` model [User.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/User.php).
   - Menghapus `status_verifikasi`, `diverifikasi_oleh`, dan `diverifikasi_pada` dari `$fillable` model [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php).
-  - Mengunci pengisian status verifikasi di level server: Petugas secara hardcode selalu menyetel `draft` saat input baru (`store`), sedangkan Admin mengubah nilai status verifikasi secara eksplisit via assignment langsung pada method `update()` dan `approve()` di [VerifikasiKejadianController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Admin/VerifikasiKejadianController.php).
+  - Mengunci pengisian status verifikasi di level server (Petugas selalu `draft`, Admin via method verifikasi eksplisit).
 - **Access Guard Petugas:**
-  - Menambahkan proteksi hak akses pada method `edit()`, `update()`, dan `destroy()` di [Petugas\KejadianKebakaranController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Petugas/KejadianKebakaranController.php) menggunakan `abort(403, 'Akses ditolak: Laporan sudah diverifikasi.')` apabila laporan sudah berstatus selain `'draft'`.
-  - Menambahkan route `DELETE /petugas/kejadian/{id}` pada [routes/web.php](file:///c:/xampp/htdocs/Project%20Damkar/routes/web.php).
+  - Melindungi method `edit()`, `update()`, dan `destroy()` dengan guard `abort(403)` jika laporan telah diverifikasi.
 - **Privacy Audit Endpoint Publik:**
-  - Melakukan audit pada [ChartDataController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Analytics/ChartDataController.php) dan rute publik untuk memastikan tidak ada data identitas perorangan, `nama_pelapor`, maupun rincian korban perorangan yang bocor ke publik. Seluruh endpoint analitik hanya mengembalikan data agregat dan summary.
+  - Memastikan seluruh endpoint analitik publik di [ChartDataController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Analytics/ChartDataController.php) hanya mengembalikan data agregat tanpa mengekspos identitas perorangan atau rincian korban.
+
+---
 
 ## [Unreleased] - 2026-10-07
 
-### Added
+### Penambahan (Added)
 - **Pemisahan Status Operasi Lapangan vs Status Verifikasi Dokumen:**
-  - **Database Migration:** Migration `2026_10_07_054127_add_status_operasi_to_kejadian_kebakaran_table.php` menambahkan kolom `status_operasi` (enum: `dalam_penanganan`, `selesai`, default: `dalam_penanganan`) dan `tanggal_waktu_selesai` (`datetime`, nullable).
-  - **Model Eloquent:** Menambahkan `status_operasi` dan `tanggal_waktu_selesai` ke `$fillable` dan `$casts` di [KejadianKebakaran.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Models/KejadianKebakaran.php).
-  - **Controller Petugas & Admin:**
-    - Pada [KejadianKebakaranController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Petugas/KejadianKebakaranController.php) (`store`, `update`) dan [VerifikasiKejadianController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Admin/VerifikasiKejadianController.php) (`update`), memvalidasi `status_operasi` dan `tanggal_waktu_selesai` (wajib diisi apabila status operasi dipilih `selesai`).
-  - **Refaktor Live Alert:**
-    - Method `liveAlert()` di [ChartDataController.php](file:///c:/xampp/htdocs/Project%20Damkar/app/Http/Controllers/Analytics/ChartDataController.php) kini dipicu secara mutlak oleh kondisi `status_operasi = 'dalam_penanganan'` dengan safety fallback maksimal 12 jam terakhir dari waktu kejadian. Saat operasi diubah menjadi `selesai`, banner Live Alert di dashboard publik otomatis dinonaktifkan (`is_active: false`).
-  - **Frontend Metronic 8:**
-    - Menambahkan input dropdown **Status Operasi Lapangan** dan input datetime-local **Waktu Penanganan Selesai** pada form input Petugas (`create.blade.php`, `edit.blade.php`) dan Admin (`edit.blade.php`).
-    - Dilengkapi logika JavaScript: jika status dipilih "Dalam Penanganan", input Waktu Selesai dinonaktifkan/dikosongkan. Jika "Selesai", input Waktu Selesai otomatis diaktifkan dan wajib diisi.
-    - Menambahkan badge status operasi di tabel daftar laporan Petugas (`petugas/index.blade.php`) dan Admin (`admin/verifikasi/index.blade.php`) — badge kuning `🟡 Penanganan` untuk insiden aktif dan badge hijau `🟢 Selesai` untuk operasi yang telah ditutup.
+  - Migration `2026_10_07_054127_add_status_operasi_to_kejadian_kebakaran_table.php` menambahkan kolom `status_operasi` dan `tanggal_waktu_selesai`.
+  - Penambahan input dropdown status operasi dan input datetime-local waktu selesai pada form input Petugas dan Admin.
+  - Refaktor banner Live Alert publik: hanya aktif jika terdapat insiden berstatus `dalam_penanganan`.
+- **Pencatatan Data Korban & Terdampak:**
+  - Migration `2026_10_07_051940_add_korban_fields_to_kejadian_kebakaran_table.php` menambahkan 5 kolom integer korban: `korban_meninggal`, `korban_luka_berat`, `korban_luka_ringan`, `kk_terdampak`, dan `jiwa_terdampak`.
+  - Penambahan card "Data Korban & Dampak Sosial" pada form input Petugas dan Admin.
+- **Notifikasi Real-Time Publik (Live Alert):**
+  - Endpoint publik `/api/analytics/live-alert` dan banner interaktif pulsing di bagian atas dashboard dengan auto-polling berkala.
+- **Pemisahan Global Filter menjadi 3 Seksi Independen:**
+  - Seksi 1 (Ringkasan KPI), Seksi 2 (Data Insiden Kebakaran), dan Seksi 3 (Data Penyelamatan/Rescue) beroperasi secara terpisah tanpa saling memicu reload yang tidak diinginkan.
+- **Visualisasi Komprehensif Data Rescue:**
+  - Penambahan grafik tren bulanan rescue, distribusi kasus pie chart, dan sebaran per kecamatan via endpoint analitik dedicated.
 
-- **Pencatatan Data Korban & Terdampak (Modul Petugas & Database):**
-  - **Database Migration:** Migration `2026_10_07_051940_add_korban_fields_to_kejadian_kebakaran_table.php` menambahkan 5 kolom integer (`nullable`, default 0) pada tabel `kejadian_kebakaran`: `korban_meninggal`, `korban_luka_berat`, `korban_luka_ringan`, `kk_terdampak`, dan `jiwa_terdampak`.
-  - **Model Eloquent:** Menambahkan ke-5 kolom tersebut ke dalam `$fillable` dan `$casts` (tipe `integer`) pada model `KejadianKebakaran`.
-  - **Controller Petugas:** Memperbarui method `store` dan menambahkan method `edit` serta `update` pada `KejadianKebakaranController` untuk memvalidasi input numerik (`integer`, `min:0`) dan menyimpannya ke database.
-  - **Controller Admin:** Menambahkan validasi dan penyimpanan 5 kolom korban pada `VerifikasiKejadianController@update`.
-  - **Frontend Metronic 8 Form Input:**
-    - Menambahkan card "Data Korban & Dampak Sosial" pada `resources/views/petugas/create.blade.php` dan `resources/views/petugas/edit.blade.php` dengan grid rapi (Luka Ringan, Luka Berat, Meninggal dalam satu baris, serta KK Terdampak dan Jiwa Terdampak pada baris berikutnya).
-    - Memperbarui `resources/views/petugas/index.blade.php` dengan tombol Edit untuk laporan berstatus Draft serta menampilkan rincian korban pada modal detail laporan.
-- **Fitur Live Alert (Notifikasi Real-Time Publik):**
-  - **Backend Endpoint:** Method `liveAlert()` pada `ChartDataController` mendeteksi 1 kejadian terbaru dari `kejadian_kebakaran` dengan syarat: `status_verifikasi = 'draft'` dan `tanggal_waktu_kejadian >= now()->subHours(3)`. Mengembalikan JSON `{"is_active": true, "jenis_layanan": "...", "kecamatan": "...", "waktu": "..."}` jika ada, atau `{"is_active": false}` jika nihil.
-  - **Route Publik:** Mendaftarkan route GET `/api/analytics/live-alert` (tanpa auth middleware) pada `routes/web.php`.
-  - **Banner Interaktif Metronic 8:** Menambahkan banner alert beranimasi pulsing (`#liveAlertBanner`) di bagian paling atas `resources/views/analytics/dashboard.blade.php` yang melakukan polling berkala setiap 30 detik via `setInterval()` dan menampilkan teks alert darurat secara otomatis saat ada kejadian aktif.
-
-### Changed
-- **Refaktor UI Dashboard Analitik — "Compact & Proportional" (Frontend Only):**
-  - **Filter Forms dipadatkan & dipindah inline:**
-    - Ketiga form filter (`#filterKeseluruhan`, `#filterKebakaran`, `#filterRescue`) dipindahkan langsung ke dalam `card-header` masing-masing seksinya.
-    - Layout form menggunakan `d-flex align-items-center justify-content-between` — judul seksi di kiri, barisan dropdown filter di kanan.
-    - Semua label filter dihapus (dianggap intuitif dari konteks placeholder dropdown); dropdown menggunakan `form-select-sm` dengan lebar fixed (`style="width:Xpx"`) agar tidak melebar tak terkontrol.
-    - Tombol Submit diberi ikon `<i class="las la-search">` dan tombol Reset menjadi ikon `✕` minimalis.
-  - **KPI Cards dipadatkan:**
-    - Padding kartu diubah dari `py-5 px-5` → `px-4 py-3`.
-    - Tipografi angka KPI diturunkan dari `fs-2hx` → `fs-2`.
-    - Ikon badge dari `symbol-40px` → `symbol-30px`.
-    - Subteks keterangan menggunakan `fs-9` (lebih kecil satu level).
-  - **Pemisah visual seksi:**
-    - Setiap seksi (KPI, Kebakaran, Rescue) dikemas dalam satu kartu utama (`card shadow-sm mb-4 border-0`).
-    - Section header Kebakaran diberi aksen `border-left: 4px solid #f1416c` + gradient merah muda tipis.
-    - Section header Rescue diberi aksen `border-left: 4px solid #009ef7` + gradient biru muda tipis.
-    - Pemisah visual antar-chart dalam seksi menggunakan `separator separator-dashed my-3`.
-  - **Canvas tinggi dikurangi:**
-    - Line/bar chart besar: dari `350px` → `260px`.
-    - Bar chart kecamatan: dari `320px` → `250px`.
-    - Pie/Doughnut chart: dari `max-height: 220px` → `max-height: 190px`.
-  - **Header dashboard direfaktor:**
-    - Judul halaman menggunakan layout flexbox `d-flex justify-content-between` — teks judul di kiri, badge "Data Terverifikasi" di kanan.
-    - Subtitel dengan warna `text-muted fs-7` di bawah judul utama.
-
-### Added
-- **Pemisahan Global Filter menjadi 3 Filter Seksi Independen:**
-  - **Seksi 1 (Ringkasan KPI):** Form `<form id="filterKeseluruhan">` khusus untuk kartu KPI dengan ID elemen:
-    - `#kpiTotalSeluruh`: Total Kejadian (Kebakaran + Rescue).
-    - `#kpiTotalKebakaran`: Total Insiden Kebakaran.
-    - `#kpiTotalKarhutla`: Total Kebakaran Hutan & Lahan.
-    - `#kpiTotalRescue`: Total Operasi Rescue.
-    - `#kpiKecamatanHotspot`: Wilayah Kecamatan Frekuensi Tertinggi.
-  - **Seksi 2 (Data Insiden Kebakaran):** Form `<form id="filterKebakaran">` independen di atas visualisasi kebakaran (`#chartTrenBulanan`, `#chartObjek`, `#chartKecamatan`, `#chartPenyebab`) dengan input: Tahun, Bulan, Kecamatan, Kategori Objek, dan Dugaan Penyebab.
-  - **Seksi 3 (Data Penyelamatan / Rescue):** Form `<form id="filterRescue">` independen di atas visualisasi rescue (`#chartTrenRescue`, `#chartJenisRescue`, `#chartKecamatanRescue`) dengan input: Tahun, Bulan, Kecamatan, dan Kategori Objek/Kasus.
-  - **Refaktor JavaScript Fetch API:**
-    - Memecah fungsi monolithic `loadAllCharts()` menjadi 3 fungsi modular independen: `updateKPI()`, `updateChartKebakaran()`, dan `updateChartRescue()`.
-    - Masing-masing fungsi di-trigger oleh event listener `submit` dengan `e.preventDefault()` serta event listener `reset` form masing-masing seksi.
-    - Mengubah filter pada Seksi Kebakaran **TIDAK** memicu reload data pada Seksi KPI atau Seksi Rescue, begitu pun sebaliknya.
-- **Penyelarasan Endpoint Ringkasan KPI (`ChartDataController@ringkasanStatistik`):**
-  - Menambahkan kalkulasi `total_karhutla` dan `kecamatan_hotspot` ke respon JSON agar konsisten dengan kartu KPI di frontend.
-- **Global Filter Dashboard Analitik Publik:**
-  - Ditambahkan form filter HTML fungsional pada tampilan [resources/views/analytics/dashboard.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/analytics/dashboard.blade.php) dengan parameter:
-    - Tahun (`tahun`)
-    - Bulan (`bulan`)
-    - Kecamatan (`kecamatan_id`)
-    - Kategori Objek (`kategori_objek_id`)
-    - Dugaan Penyebab (`kategori_penyebab_id`)
-  - Form dilengkapi tombol **Filter** (reload chart & KPI via AJAX/fetch tanpa reload halaman penuh) serta tombol **Reset**.
-  - Dropdown master data pada form filter disuplai dari database melalui controller:
-    - `Kecamatan::orderBy('nama_kecamatan')->get()`
-    - `KategoriObjek::orderBy('nama_kategori')->get()`
-    - `KategoriPenyebab::orderBy('nama_penyebab')->get()`
-  - Integrasi JavaScript Chart.js untuk me-load seluruh chart secara dinamis dengan query string filter aktif (`/api/analytics/*?tahun=...&bulan=...&kecamatan_id=...`).
-  - Penanganan lifecycle Chart.js instance (`.destroy()`) untuk mencegah kebocoran memori (memory leak) dan duplikasi canvas chart saat filter diperbarui.
-- **Sesi Visualisasi Komprehensif Data Rescue (Penyelamatan):**
-  - Ditambahkan endpoint baru `sebaranRescuePerKecamatan()` di `ChartDataController` dan route `/api/analytics/sebaran-rescue-per-kecamatan` di `routes/web.php`.
-  - Ditambahkan section khusus **Data Penyelamatan (Rescue)** di [resources/views/analytics/dashboard.blade.php](file:///c:/xampp/htdocs/Project%20Damkar/resources/views/analytics/dashboard.blade.php) sejajar dengan Sesi Kebakaran:
-    - `<canvas id="chartTrenRescue">`: Line chart tren bulanan operasi rescue.
-    - `<canvas id="chartJenisRescue">`: Pie chart distribusi jenis/kategori kasus rescue beserta tabel ringkasan.
-    - `<canvas id="chartKecamatanRescue">`: Bar chart sebaran operasi rescue di setiap wilayah kecamatan.
-  - Seluruh visualisasi data Rescue terhubung penuh ke Global Filter (`tahun`, `bulan`, `kecamatan_id`, `kategori_objek_id`, `kategori_penyebab_id`) via `loadAllCharts()` dengan siklus `.destroy()` Chart.js yang aman.
-
-### Changed
-- **Pembaruan Query Controller Analitik (`ChartDataController`):**
-  - Seluruh method endpoint analitik diperbarui agar mendukung parameter filter global menggunakan method Eloquent `->when()`:
-    - `trenKebakaranBulanan()`
-    - `trenRescueBulanan()`
-    - `distribusiObjekKebakaran()`
-    - `distribusiPenyebabKebakaran()`
-    - `sebaranPerKecamatan()`
-    - `distribusiJenisRescue()`
-    - `trenKomparasiBulanan()`
-    - `ringkasanStatistik()`
-  - Seluruh query tetap mematuhi aturan arsitektur data: wajib menggunakan scope `KejadianKebakaran::verifiedOnly()`.
-- **Pembaruan `DashboardController@index`:**
-  - Menghubungkan pengambilan master data (`Kecamatan`, `KategoriObjek`, `KategoriPenyebab`) ke view.
-  - Memperbarui kalkulasi KPI ringkasan pada load awal agar sinkron dengan parameter filter yang dikirimkan via query URL.
+### Perubahan (Changed)
+- **Refaktor UI Dashboard Analitik ("Compact & Proportional"):**
+  - Memindahkan kontrol form filter inline ke dalam header card masing-masing seksi.
+  - Penyesuaian ukuran tipografi metrik KPI, padding kartu, serta proporsi canvas grafik agar lebih padat dan responsif.
+  - Penambahan aksen garis warna tematik pada header kartu: merah muda untuk Kebakaran dan ungu/biru untuk Rescue.
+- **Penyelarasan Query Analitik:**
+  - Seluruh endpoint di `ChartDataController` mendukung parameter filter dinamis menggunakan method Eloquent `->when()` dengan pembatasan ketat scope `KejadianKebakaran::verifiedOnly()`.

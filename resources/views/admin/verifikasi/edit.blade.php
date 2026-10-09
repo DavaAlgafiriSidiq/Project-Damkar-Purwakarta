@@ -62,7 +62,7 @@
                     <div class="card-body pt-2">
                         
                         {{-- 1. Status Verifikasi --}}
-                        <div class="mb-6 p-4 rounded bg-light border border-dashed">
+                        <div class="mb-6 p-4 rounded bg-light border border-gray-200">
                             <label class="required form-label fw-bold fs-6">Status Verifikasi Laporan</label>
                             <div class="d-flex gap-4">
                                 <div class="form-check form-check-custom form-check-solid form-check-warning">
@@ -83,9 +83,9 @@
                         {{-- 2. Jenis Layanan --}}
                         <div class="mb-6">
                             <label class="required form-label fw-semibold fs-6">Jenis Layanan</label>
-                            <select name="jenis_layanan" id="selectAdminJenisLayanan" class="form-select form-select-solid" required onchange="sinkronisasiAdminJenisLayanan()">
-                                <option value="darurat" {{ old('jenis_layanan', $laporan->jenis_layanan) === 'darurat' ? 'selected' : '' }}>Kebakaran (Darurat)</option>
-                                <option value="non_darurat" {{ old('jenis_layanan', $laporan->jenis_layanan) === 'non_darurat' ? 'selected' : '' }}>Penyelamatan / Rescue (Non-Darurat)</option>
+                            <select name="jenis_layanan" id="selectAdminJenisLayanan" class="form-select form-select-solid" data-control="select2" data-hide-search="true" required onchange="sinkronisasiAdminJenisLayanan()">
+                                <option value="darurat" data-icon="las la-fire" {{ old('jenis_layanan', $laporan->jenis_layanan) === 'darurat' ? 'selected' : '' }}>Kebakaran (Darurat)</option>
+                                <option value="non_darurat" data-icon="las la-life-ring" {{ old('jenis_layanan', $laporan->jenis_layanan) === 'non_darurat' ? 'selected' : '' }}>Penyelamatan / Rescue (Non-Darurat)</option>
                             </select>
                         </div>
 
@@ -97,12 +97,12 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="required form-label fw-semibold fs-6">Status Operasi Lapangan</label>
-                                <select name="status_operasi" id="selectAdminStatusOperasi" class="form-select form-select-solid" required onchange="handleAdminStatusOperasiChange()">
-                                    <option value="dalam_penanganan" {{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'dalam_penanganan' ? 'selected' : '' }}>
-                                        🟡 Dalam Penanganan
+                                <select name="status_operasi" id="selectAdminStatusOperasi" class="form-select form-select-solid" data-control="select2" data-hide-search="true" required onchange="handleAdminStatusOperasiChange()">
+                                    <option value="dalam_penanganan" data-icon="ki-duotone ki-loading" {{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'dalam_penanganan' ? 'selected' : '' }}>
+                                        Dalam Penanganan
                                     </option>
-                                    <option value="selesai" {{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'selesai' ? 'selected' : '' }}>
-                                        🟢 Selesai (Padam / Tertangani)
+                                    <option value="selesai" data-icon="ki-duotone ki-check-circle" {{ old('status_operasi', $laporan->status_operasi ?? 'dalam_penanganan') === 'selesai' ? 'selected' : '' }}>
+                                        Selesai (Padam / Tertangani)
                                     </option>
                                 </select>
                             </div>
@@ -118,11 +118,11 @@
                         {{-- 4. Kecamatan Lokasi --}}
                         <div class="mb-6">
                             <label class="required form-label fw-semibold fs-6">Kecamatan Lokasi</label>
-                            <select name="kecamatan_id" class="form-select form-select-solid" required>
+                            <select name="kecamatan_id" id="selectAdminKecamatan" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Kecamatan" required>
                                 <option value="">-- Pilih Kecamatan --</option>
                                 @foreach ($kecamatans as $kec)
-                                    <option value="{{ $kec->id }}" {{ old('kecamatan_id', $laporan->kecamatan_id) == $kec->id ? 'selected' : '' }}>
-                                        Kec. {{ $kec->nama_kecamatan }} ({{ $kec->zonaLayanan->nama_pos ?? 'Pos Damkar' }})
+                                    <option value="{{ $kec->id }}" data-icon="ki-duotone ki-geolocation" {{ old('kecamatan_id', $laporan->kecamatan_id) == $kec->id ? 'selected' : '' }}>
+                                        Kec. {{ $kec->nama_kecamatan }} ({{ $kec->zona_layanan ?? ($kec->zonaLayanan->nama_pos ?? 'Pos Damkar') }})
                                     </option>
                                 @endforeach
                             </select>
@@ -131,11 +131,28 @@
                         {{-- 5. Kategori Objek (DINAMIS) --}}
                         <div class="mb-6">
                             <label class="required form-label fw-semibold fs-6" id="labelAdminKategoriObjek">Kategori Objek</label>
-                            <select name="kategori_objek_id" id="selectAdminKategoriObjek" class="form-select form-select-solid" required>
+                            <select name="kategori_objek_id" id="selectAdminKategoriObjek" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Kategori Objek / Kasus" required>
                                 <option value="">-- Pilih Kategori --</option>
                                 @foreach ($kategoriObjek as $obj)
                                     <option value="{{ $obj->id }}" 
                                             data-jenis="{{ $obj->jenis_layanan }}" 
+                                            @if(str_contains(strtolower($obj->nama_kategori), 'tawon') || str_contains(strtolower($obj->nama_kategori), 'lebah')) data-icon="bi bi-bug"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'ular') || str_contains(strtolower($obj->nama_kategori), 'kucing') || str_contains(strtolower($obj->nama_kategori), 'binatang') || str_contains(strtolower($obj->nama_kategori), 'hewan') || str_contains(strtolower($obj->nama_kategori), 'biawak') || str_contains(strtolower($obj->nama_kategori), 'monyet') || str_contains(strtolower($obj->nama_kategori), 'lutung') || str_contains(strtolower($obj->nama_kategori), 'ternak') || str_contains(strtolower($obj->nama_kategori), 'kandang')) data-icon="las la-paw"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'pasar') || str_contains(strtolower($obj->nama_kategori), 'pertokoan') || str_contains(strtolower($obj->nama_kategori), 'toko') || str_contains(strtolower($obj->nama_kategori), 'kios')) data-icon="ki-duotone ki-shop"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'sekolah') || str_contains(strtolower($obj->nama_kategori), 'kantor') || str_contains(strtolower($obj->nama_kategori), 'rs') || str_contains(strtolower($obj->nama_kategori), 'perkantoran')) data-icon="ki-duotone ki-bank"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'rumah') || str_contains(strtolower($obj->nama_kategori), 'bangunan') || str_contains(strtolower($obj->nama_kategori), 'ruko') || str_contains(strtolower($obj->nama_kategori), 'gedung') || str_contains(strtolower($obj->nama_kategori), 'tinggal')) data-icon="ki-duotone ki-home-2"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'listrik') || str_contains(strtolower($obj->nama_kategori), 'tower') || str_contains(strtolower($obj->nama_kategori), 'genset') || str_contains(strtolower($obj->nama_kategori), 'gardu')) data-icon="ki-duotone ki-electricity"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'kendaraan') || str_contains(strtolower($obj->nama_kategori), 'mobil') || str_contains(strtolower($obj->nama_kategori), 'motor') || str_contains(strtolower($obj->nama_kategori), 'bus') || str_contains(strtolower($obj->nama_kategori), 'truk')) data-icon="ki-duotone ki-car"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'lahan') || str_contains(strtolower($obj->nama_kategori), 'hutan') || str_contains(strtolower($obj->nama_kategori), 'alang') || str_contains(strtolower($obj->nama_kategori), 'kebun') || str_contains(strtolower($obj->nama_kategori), 'pohon') || str_contains(strtolower($obj->nama_kategori), 'perkebunan')) data-icon="ki-duotone ki-tree"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'angin') || str_contains(strtolower($obj->nama_kategori), 'beliung')) data-icon="las la-wind"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'pabrik') || str_contains(strtolower($obj->nama_kategori), 'gudang') || str_contains(strtolower($obj->nama_kategori), 'industri') || str_contains(strtolower($obj->nama_kategori), 'perindustrian')) data-icon="las la-industry"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'sumur') || str_contains(strtolower($obj->nama_kategori), 'tenggelam') || str_contains(strtolower($obj->nama_kategori), 'tercebur') || str_contains(strtolower($obj->nama_kategori), 'air') || str_contains(strtolower($obj->nama_kategori), 'sungai')) data-icon="ki-duotone ki-drop"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'orang') || str_contains(strtolower($obj->nama_kategori), 'hilang') || str_contains(strtolower($obj->nama_kategori), 'korban')) data-icon="ki-duotone ki-user"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'cincin') || str_contains(strtolower($obj->nama_kategori), 'sakit') || str_contains(strtolower($obj->nama_kategori), 'luka') || str_contains(strtolower($obj->nama_kategori), 'medis') || str_contains(strtolower($obj->nama_kategori), 'kecelakaan')) data-icon="las la-band-aid"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'api') || str_contains(strtolower($obj->nama_kategori), 'kebakaran')) data-icon="las la-fire"
+                                            @elseif(str_contains(strtolower($obj->nama_kategori), 'lain')) data-icon="las la-ellipsis-h"
+                                            @else data-icon="ki-duotone ki-abstract-26"
+                                            @endif
                                             {{ old('kategori_objek_id', $laporan->kategori_objek_id) == $obj->id ? 'selected' : '' }}>
                                         {{ $obj->nama_kategori }} {{ $obj->is_karhutla ? '(Karhutla)' : '' }}
                                     </option>
@@ -146,10 +163,21 @@
                         {{-- 6. Dugaan Penyebab --}}
                         <div class="mb-2" id="wrapperAdminPenyebab">
                             <label class="form-label fw-semibold fs-6">Dugaan Penyebab Kebakaran</label>
-                            <select name="kategori_penyebab_id" id="selectAdminPenyebab" class="form-select form-select-solid">
+                            <select name="kategori_penyebab_id" id="selectAdminPenyebab" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Dugaan Penyebab">
                                 <option value="">-- Pilih Dugaan Penyebab --</option>
                                 @foreach ($kategoriPenyebab as $penyebab)
-                                    <option value="{{ $penyebab->id }}" {{ old('kategori_penyebab_id', $laporan->kategori_penyebab_id) == $penyebab->id ? 'selected' : '' }}>
+                                    <option value="{{ $penyebab->id }}"
+                                        @if(str_contains(strtolower($penyebab->nama_penyebab), 'listrik') || str_contains(strtolower($penyebab->nama_penyebab), 'korslet') || str_contains(strtolower($penyebab->nama_penyebab), 'accu') || str_contains(strtolower($penyebab->nama_penyebab), 'baterai')) data-icon="ki-duotone ki-electricity"
+                                        @elseif(str_contains(strtolower($penyebab->nama_penyebab), 'sampah')) data-icon="ki-duotone ki-trash"
+                                        @elseif(str_contains(strtolower($penyebab->nama_penyebab), 'kompor') || str_contains(strtolower($penyebab->nama_penyebab), 'gas') || str_contains(strtolower($penyebab->nama_penyebab), 'hawu') || str_contains(strtolower($penyebab->nama_penyebab), 'tungku') || str_contains(strtolower($penyebab->nama_penyebab), 'lilin') || str_contains(strtolower($penyebab->nama_penyebab), 'korek') || str_contains(strtolower($penyebab->nama_penyebab), 'bakar') || str_contains(strtolower($penyebab->nama_penyebab), 'api')) data-icon="las la-fire"
+                                        @elseif(str_contains(strtolower($penyebab->nama_penyebab), 'rokok')) data-icon="las la-smoking"
+                                        @elseif(str_contains(strtolower($penyebab->nama_penyebab), 'petasan') || str_contains(strtolower($penyebab->nama_penyebab), 'bom') || str_contains(strtolower($penyebab->nama_penyebab), 'pengelasan') || str_contains(strtolower($penyebab->nama_penyebab), 'las')) data-icon="las la-bomb"
+                                        @elseif(str_contains(strtolower($penyebab->nama_penyebab), 'tabrakan') || str_contains(strtolower($penyebab->nama_penyebab), 'kendaraan') || str_contains(strtolower($penyebab->nama_penyebab), 'rem')) data-icon="ki-duotone ki-car"
+                                        @elseif(str_contains(strtolower($penyebab->nama_penyebab), 'belum') || str_contains(strtolower($penyebab->nama_penyebab), 'diketahui') || str_contains(strtolower($penyebab->nama_penyebab), 'selidik')) data-icon="las la-question-circle"
+                                        @elseif(str_contains(strtolower($penyebab->nama_penyebab), 'lain')) data-icon="las la-ellipsis-h"
+                                        @else data-icon="ki-duotone ki-abstract-26"
+                                        @endif
+                                        {{ old('kategori_penyebab_id', $laporan->kategori_penyebab_id) == $penyebab->id ? 'selected' : '' }}>
                                         {{ $penyebab->nama_penyebab }}
                                     </option>
                                 @endforeach
@@ -164,7 +192,7 @@
                 <div class="card card-flush shadow-sm mb-7">
                     <div class="card-header pt-6">
                         <div class="card-title">
-                            <i class="ki-duotone ki-heart-circle fs-2 text-danger me-2"><span class="path1"></span><span class="path2"></span></i>
+                            <i class="las la-heartbeat fs-2 text-danger me-2"></i>
                             <h3 class="fw-bold m-0 fs-5">Data Korban & Dampak Sosial</h3>
                         </div>
                     </div>
@@ -179,7 +207,7 @@
                                 <label class="form-label fw-semibold fs-7 text-gray-700">Luka Ringan</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light-warning text-warning border-0 fw-bold">
-                                        <i class="ki-duotone ki-bandage fs-5 text-warning"><span class="path1"></span><span class="path2"></span></i>
+                                        <i class="las la-band-aid fs-4 text-warning"></i>
                                     </span>
                                     <input type="number" name="korban_luka_ringan" class="form-control form-control-solid" value="{{ old('korban_luka_ringan', $laporan->korban_luka_ringan ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
@@ -190,7 +218,7 @@
                                 <label class="form-label fw-semibold fs-7 text-gray-700">Luka Berat</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light-danger text-danger border-0 fw-bold">
-                                        <i class="ki-duotone ki-cross-circle fs-5 text-danger"><span class="path1"></span><span class="path2"></span></i>
+                                        <i class="las la-times-circle fs-4 text-danger"></i>
                                     </span>
                                     <input type="number" name="korban_luka_berat" class="form-control form-control-solid" value="{{ old('korban_luka_berat', $laporan->korban_luka_berat ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
@@ -200,8 +228,8 @@
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold fs-7 text-danger">Meninggal</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-danger text-white border-0 fw-bold">
-                                        <i class="ki-duotone ki-user-cross fs-5 text-white"><span class="path1"></span><span class="path2"></span></i>
+                                    <span class="input-group-text bg-light-danger text-danger border-0 fw-bold">
+                                        <i class="las la-skull fs-4 text-danger"></i>
                                     </span>
                                     <input type="number" name="korban_meninggal" class="form-control form-control-solid text-danger fw-bold" value="{{ old('korban_meninggal', $laporan->korban_meninggal ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
@@ -215,7 +243,7 @@
                                 <label class="form-label fw-semibold fs-7 text-gray-700">KK Terdampak</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light-primary text-primary border-0 fw-bold">
-                                        <i class="ki-duotone ki-home fs-5 text-primary"><span class="path1"></span><span class="path2"></span></i>
+                                        <i class="las la-home fs-4 text-primary"></i>
                                     </span>
                                     <input type="number" name="kk_terdampak" class="form-control form-control-solid" value="{{ old('kk_terdampak', $laporan->kk_terdampak ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">KK</span>
@@ -226,7 +254,7 @@
                                 <label class="form-label fw-semibold fs-7 text-gray-700">Total Jiwa Terdampak</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light-info text-info border-0 fw-bold">
-                                        <i class="ki-duotone ki-people fs-5 text-info"><span class="path1"></span><span class="path2"></span></i>
+                                        <i class="las la-users fs-4 text-info"></i>
                                     </span>
                                     <input type="number" name="jiwa_terdampak" class="form-control form-control-solid" value="{{ old('jiwa_terdampak', $laporan->jiwa_terdampak ?? 0) }}" min="0" placeholder="0" />
                                     <span class="input-group-text bg-light border-0 fs-8 text-gray-600">Jiwa</span>
@@ -297,7 +325,7 @@
                             <textarea name="deskripsi" class="form-control form-control-solid" rows="4">{{ old('deskripsi', $laporan->deskripsi) }}</textarea>
                         </div>
 
-                        <div class="p-3 bg-light rounded fs-8 text-muted mb-4 border border-dashed">
+                        <div class="p-3 bg-light rounded fs-8 text-muted mb-4 border border-gray-200">
                             <div><strong>Pelapor Awal:</strong> {{ $laporan->pelapor->name ?? '-' }} ({{ $laporan->created_at->format('d/m/Y H:i') }})</div>
                             @if($laporan->diverifikasi_oleh)
                                 <div><strong>Diverifikasi oleh:</strong> {{ $laporan->verifikator->name ?? '-' }} ({{ $laporan->diverifikasi_pada?->format('d/m/Y H:i') }})</div>
@@ -333,20 +361,49 @@ function sinkronisasiAdminJenisLayanan() {
     const labelKategori = document.getElementById('labelAdminKategoriObjek');
     labelKategori.innerText = (jenisLayanan === 'darurat') ? 'Kategori Objek Terbakar' : 'Jenis Operasi Penyelamatan (Rescue)';
 
+    // Filter & susun ulang dropdown Kategori Objek (opsi aktif di atas, disabled di bawah)
     const selectObjek = document.getElementById('selectAdminKategoriObjek');
-    const options = selectObjek.querySelectorAll('option');
+    const options = Array.from(selectObjek.querySelectorAll('option'));
+    let selectedStillValid = false;
+
+    const placeholderOpt = options.find(opt => !opt.value);
+    const activeOpts = [];
+    const disabledOpts = [];
 
     options.forEach(opt => {
         if (!opt.value) return;
         const optJenis = opt.getAttribute('data-jenis');
         if (optJenis === targetJenis) {
-            opt.style.display = '';
             opt.disabled = false;
+            opt.style.display = '';
+            activeOpts.push(opt);
+            if (opt.selected) selectedStillValid = true;
         } else {
-            opt.style.display = 'none';
             opt.disabled = true;
+            opt.style.display = 'none';
+            disabledOpts.push(opt);
         }
     });
+
+    // Posisikan ke dalam DOM: placeholder -> opsi aktif -> opsi nonaktif di urutan paling bawah
+    if (placeholderOpt) selectObjek.appendChild(placeholderOpt);
+    activeOpts.forEach(opt => selectObjek.appendChild(opt));
+    disabledOpts.forEach(opt => selectObjek.appendChild(opt));
+
+    if (!selectedStillValid) {
+        selectObjek.value = '';
+    }
+
+    if (window.$ && $.fn.select2) {
+        const $selectObjek = $('#selectAdminKategoriObjek');
+        if ($selectObjek.hasClass('select2-hidden-accessible')) {
+            $selectObjek.select2('destroy');
+        }
+        if (window.initEnhancedSelect2) {
+            window.initEnhancedSelect2($selectObjek.parent());
+        }
+        $selectObjek.trigger('change');
+    }
 
     const wrapperPenyebab = document.getElementById('wrapperAdminPenyebab');
     const selectPenyebab  = document.getElementById('selectAdminPenyebab');
@@ -354,10 +411,16 @@ function sinkronisasiAdminJenisLayanan() {
     if (jenisLayanan === 'darurat') {
         wrapperPenyebab.style.opacity = '1';
         selectPenyebab.disabled = false;
+        if (window.$) {
+            $('#selectAdminPenyebab').prop('disabled', false).trigger('change');
+        }
     } else {
         wrapperPenyebab.style.opacity = '0.4';
         selectPenyebab.disabled = true;
         selectPenyebab.value = '';
+        if (window.$) {
+            $('#selectAdminPenyebab').val('').prop('disabled', true).trigger('change');
+        }
     }
 }
 
@@ -382,6 +445,10 @@ function handleAdminStatusOperasiChange() {
 document.addEventListener('DOMContentLoaded', function() {
     sinkronisasiAdminJenisLayanan();
     handleAdminStatusOperasiChange();
+    if (window.$) {
+        $('#selectAdminJenisLayanan').on('change', sinkronisasiAdminJenisLayanan);
+        $('#selectAdminStatusOperasi').on('change', handleAdminStatusOperasiChange);
+    }
 });
 </script>
 @endsection

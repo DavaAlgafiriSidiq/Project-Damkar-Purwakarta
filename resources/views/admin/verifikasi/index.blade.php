@@ -53,11 +53,11 @@
     <div class="row g-5 g-xl-8 mb-7">
         {{-- Antrean Draft --}}
         <div class="col-xl-4">
-            <a href="{{ route('admin.verifikasi.index', ['status' => 'draft']) }}" class="card h-100 bg-light-warning hoverable border border-warning border-dashed shadow-xs">
+            <a href="{{ route('admin.verifikasi.index', ['status' => 'draft']) }}" class="card h-100 bg-light-warning hoverable border border-gray-200 shadow-sm rounded-3">
                 <div class="card-body d-flex align-items-center justify-content-between py-5 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
                         <span class="text-warning fw-bold fs-7">Menunggu Verifikasi (Draft)</span>
-                        <span class="text-dark fw-bolder fs-2hx mt-1">{{ number_format($countDraft) }}</span>
+                        <span class="text-gray-900 fw-bolder fs-2hx mt-1 tracking-tight">{{ number_format($countDraft) }}</span>
                         <span class="text-muted fs-8 mt-1">Laporan perlu validasi segera</span>
                     </div>
                     <div class="symbol symbol-50px symbol-circle flex-shrink-0">
@@ -71,11 +71,11 @@
 
         {{-- Terverifikasi --}}
         <div class="col-xl-4">
-            <a href="{{ route('admin.verifikasi.index', ['status' => 'verified']) }}" class="card h-100 bg-light-success hoverable border border-success border-dashed shadow-xs">
+            <a href="{{ route('admin.verifikasi.index', ['status' => 'verified']) }}" class="card h-100 bg-light-success hoverable border border-gray-200 shadow-sm rounded-3">
                 <div class="card-body d-flex align-items-center justify-content-between py-5 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
                         <span class="text-success fw-bold fs-7">Sudah Terverifikasi (Sah)</span>
-                        <span class="text-dark fw-bolder fs-2hx mt-1">{{ number_format($countVerified) }}</span>
+                        <span class="text-gray-900 fw-bolder fs-2hx mt-1 tracking-tight">{{ number_format($countVerified) }}</span>
                         <span class="text-muted fs-8 mt-1">Aktif pada dashboard publik</span>
                     </div>
                     <div class="symbol symbol-50px symbol-circle flex-shrink-0">
@@ -89,11 +89,11 @@
 
         {{-- Total Seluruh Data --}}
         <div class="col-xl-4">
-            <a href="{{ route('admin.verifikasi.index', ['status' => 'all']) }}" class="card h-100 bg-light-primary hoverable border border-primary border-dashed shadow-xs">
+            <a href="{{ route('admin.verifikasi.index', ['status' => 'all']) }}" class="card h-100 bg-light-primary hoverable border border-gray-200 shadow-sm rounded-3">
                 <div class="card-body d-flex align-items-center justify-content-between py-5 px-6">
                     <div class="d-flex flex-column flex-grow-1 me-3">
                         <span class="text-primary fw-bold fs-7">Total Seluruh Database</span>
-                        <span class="text-dark fw-bolder fs-2hx mt-1">{{ number_format($countTotal) }}</span>
+                        <span class="text-gray-900 fw-bolder fs-2hx mt-1 tracking-tight">{{ number_format($countTotal) }}</span>
                         <span class="text-muted fs-8 mt-1">Keseluruhan entri kejadian</span>
                     </div>
                     <div class="symbol symbol-50px symbol-circle flex-shrink-0">
@@ -107,7 +107,7 @@
     </div>
 
     {{-- ── BARIS 2: BANNER REKAPITULASI HASIL FILTER AKTIF (EKSPLISIT) ── --}}
-    <div class="card bg-light-info border border-info border-dashed mb-7 shadow-xs">
+    <div class="card bg-light-info border border-gray-200 mb-7 shadow-sm rounded-3">
         <div class="card-body py-5 px-6">
             
             {{-- Header Info Parameter Filter Aktif --}}
@@ -272,20 +272,20 @@
                         {{-- Col 1: Jenis Layanan --}}
                         <div class="col-md-3 col-lg-3">
                             <label class="fs-8 fw-bold text-gray-600 mb-1">Jenis Layanan:</label>
-                            <select name="jenis_layanan" class="form-select form-select-solid form-select-sm" onchange="document.getElementById('formFilterAdmin').submit();">
+                            <select name="jenis_layanan" id="adminFilterLayanan" class="form-select form-select-solid form-select-sm" data-control="select2" data-hide-search="true">
                                 <option value="">Semua Layanan</option>
-                                <option value="darurat" {{ $jenisLayanan === 'darurat' ? 'selected' : '' }}>Kebakaran (Darurat)</option>
-                                <option value="non_darurat" {{ $jenisLayanan === 'non_darurat' ? 'selected' : '' }}>Rescue (Non-Darurat)</option>
+                                <option value="darurat" data-icon="las la-fire" {{ $jenisLayanan === 'darurat' ? 'selected' : '' }}>Kebakaran (Darurat)</option>
+                                <option value="non_darurat" data-icon="ki-duotone ki-shield-tick" {{ $jenisLayanan === 'non_darurat' ? 'selected' : '' }}>Rescue (Non-Darurat)</option>
                             </select>
                         </div>
 
                         {{-- Col 2: Kecamatan --}}
                         <div class="col-md-3 col-lg-3">
                             <label class="fs-8 fw-bold text-gray-600 mb-1">Kecamatan Lokasi:</label>
-                            <select name="kecamatan_id" class="form-select form-select-solid form-select-sm" onchange="document.getElementById('formFilterAdmin').submit();">
+                            <select name="kecamatan_id" id="adminFilterKecamatan" class="form-select form-select-solid form-select-sm" data-control="select2">
                                 <option value="">Semua Kecamatan</option>
                                 @foreach($kecamatans as $kec)
-                                    <option value="{{ $kec->id }}" {{ $kecamatanId == $kec->id ? 'selected' : '' }}>Kec. {{ $kec->nama_kecamatan }}</option>
+                                    <option value="{{ $kec->id }}" data-icon="ki-duotone ki-geolocation" {{ $kecamatanId == $kec->id ? 'selected' : '' }}>Kec. {{ $kec->nama_kecamatan }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -350,7 +350,7 @@
                                         @if($item->jenis_layanan === 'darurat')
                                             <span class="badge badge-light-danger w-90px mt-1"><i class="las la-fire fs-8 me-1 text-danger"></i> Kebakaran</span>
                                         @else
-                                            <span class="badge badge-light-primary w-90px mt-1"><i class="ki-duotone ki-rescue fs-8 me-1 text-primary"></i> Rescue</span>
+                                            <span class="badge badge-light-primary w-90px mt-1"><i class="ki-duotone ki-shield-tick fs-8 me-1 text-primary"></i> Rescue</span>
                                         @endif
                                     </div>
                                 </td>
@@ -384,7 +384,7 @@
                                     <div class="d-flex flex-column align-items-center gap-1">
                                         {{-- Badge Status Operasi Lapangan --}}
                                         @if ($item->status_operasi === 'dalam_penanganan')
-                                            <span class="badge badge-light-warning text-warning fw-bolder px-2 py-1 fs-8 border border-warning border-dashed" title="Operasi masih aktif di lapangan">
+                                            <span class="badge badge-light-warning text-warning fw-bolder px-2 py-1 fs-8" title="Operasi masih aktif di lapangan">
                                                 🟡 Penanganan
                                             </span>
                                         @else
@@ -556,4 +556,16 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.$) {
+        $('#adminFilterLayanan, #adminFilterKecamatan').on('change', function() {
+            $('#formFilterAdmin').submit();
+        });
+    }
+});
+</script>
+@endpush
 @endsection
