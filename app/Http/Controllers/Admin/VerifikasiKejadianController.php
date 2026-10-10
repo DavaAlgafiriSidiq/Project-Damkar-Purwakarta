@@ -116,7 +116,7 @@ class VerifikasiKejadianController extends Controller
                           ->paginate(15)
                           ->withQueryString();
 
-        $kecamatans = Kecamatan::orderBy('nama_kecamatan')->get();
+        $kecamatans = Kecamatan::orderByZona()->get();
 
         return view('admin.verifikasi.index', compact(
             'laporans',
@@ -149,9 +149,9 @@ class VerifikasiKejadianController extends Controller
         $laporan = KejadianKebakaran::with(['kecamatan', 'kategoriObjek', 'kategoriPenyebab', 'pelapor'])
             ->findOrFail($id);
 
-        $kecamatans       = Kecamatan::with('zonaLayanan')->orderBy('nama_kecamatan')->get();
-        $kategoriObjek    = KategoriObjek::orderBy('nama_kategori')->get();
-        $kategoriPenyebab = KategoriPenyebab::orderBy('nama_penyebab')->get();
+        $kecamatans       = Kecamatan::with('zonaLayanan')->orderByZona()->get();
+        $kategoriObjek    = KategoriObjek::orderWithLainLast('nama_kategori')->get();
+        $kategoriPenyebab = KategoriPenyebab::orderWithLainLast('nama_penyebab')->get();
 
         return view('admin.verifikasi.edit', compact('laporan', 'kecamatans', 'kategoriObjek', 'kategoriPenyebab'));
     }

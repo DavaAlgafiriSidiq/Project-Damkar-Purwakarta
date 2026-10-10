@@ -144,6 +144,13 @@ class ChartDataController extends Controller
             ->map(function ($group) { return count($group); })
             ->sortDesc();
 
+        // Paksa 'Lain-lain' / 'Lainnya' berada di urutan paling akhir
+        $lainKeys = $data->keys()->filter(fn($k) => str_contains(strtolower($k), 'lain'));
+        foreach ($lainKeys as $lk) {
+            $val = $data->pull($lk);
+            $data->put($lk, $val);
+        }
+
         return response()->json([
             'labels'   => $data->keys(),
             'datasets' => [['label' => 'Jumlah Kejadian', 'data' => $data->values()]],
@@ -179,6 +186,13 @@ class ChartDataController extends Controller
             })
             ->map(function ($group) { return count($group); })
             ->sortDesc();
+
+        // Paksa 'Lain-lain' / 'Lainnya' berada di urutan paling akhir
+        $lainKeys = $data->keys()->filter(fn($k) => str_contains(strtolower($k), 'lain'));
+        foreach ($lainKeys as $lk) {
+            $val = $data->pull($lk);
+            $data->put($lk, $val);
+        }
 
         return response()->json([
             'labels'   => $data->keys(),
@@ -252,6 +266,13 @@ class ChartDataController extends Controller
             })
             ->map(function ($group) { return count($group); })
             ->sortDesc();
+
+        // Paksa 'Lain-lain' / 'Lainnya' berada di urutan paling akhir
+        $lainKeys = $data->keys()->filter(fn($k) => str_contains(strtolower($k), 'lain'));
+        foreach ($lainKeys as $lk) {
+            $val = $data->pull($lk);
+            $data->put($lk, $val);
+        }
 
         return response()->json([
             'labels'   => $data->keys(),
@@ -370,13 +391,11 @@ class ChartDataController extends Controller
     {
         $tahun = (int) $request->input('tahun', now()->year);
 
-        // Query dasar: hanya data verified pada tahun yang diminta beserta filter aktif
+        // Query dasar: hanya data verified pada tahun yang diminta beserta filter aktif (Waktu & Lokasi)
         $baseQuery = KejadianKebakaran::verifiedOnly()
             ->whereYear('tanggal_waktu_kejadian', $tahun)
             ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $request->input('bulan')))
             ->when($request->filled('kecamatan_id'), fn($q) => $q->where('kecamatan_id', $request->input('kecamatan_id')))
-            ->when($request->filled('kategori_objek_id'), fn($q) => $q->where('kategori_objek_id', $request->input('kategori_objek_id')))
-            ->when($request->filled('kategori_penyebab_id'), fn($q) => $q->where('kategori_penyebab_id', $request->input('kategori_penyebab_id')))
             ->when($request->filled('zona_layanan') && $request->input('zona_layanan') !== 'Semua', function ($q) use ($request) {
                 $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $request->input('zona_layanan')));
             });

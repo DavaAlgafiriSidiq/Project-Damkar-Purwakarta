@@ -20,12 +20,12 @@ class DashboardController extends Controller
         $kategoriPenyebabId = $request->input('kategori_penyebab_id');
         $zonaLayanan        = $request->input('zona_layanan');
 
-        // Master data untuk opsi filter
-        $kecamatans             = Kecamatan::orderBy('nama_kecamatan')->get();
-        $kategoriObjeks         = KategoriObjek::orderBy('nama_kategori')->get();
-        $kategoriObjekKebakaran = KategoriObjek::where('jenis_layanan', 'kebakaran')->orderBy('nama_kategori')->get();
-        $kategoriObjekRescue    = KategoriObjek::where('jenis_layanan', 'rescue')->orderBy('nama_kategori')->get();
-        $kategoriPenyebabs      = KategoriPenyebab::orderBy('nama_penyebab')->get();
+        // Master data untuk opsi filter (memaksa opsi 'Lain-lain' / 'Lainnya' di urutan paling akhir)
+        $kecamatans             = Kecamatan::orderByZona()->get();
+        $kategoriObjeks         = KategoriObjek::orderWithLainLast('nama_kategori')->get();
+        $kategoriObjekKebakaran = KategoriObjek::where('jenis_layanan', 'kebakaran')->orderWithLainLast('nama_kategori')->get();
+        $kategoriObjekRescue    = KategoriObjek::where('jenis_layanan', 'rescue')->orderWithLainLast('nama_kategori')->get();
+        $kategoriPenyebabs      = KategoriPenyebab::orderWithLainLast('nama_penyebab')->get();
 
         // Daftar zona layanan baku (WMK)
         $zonaLayanans = [
@@ -36,13 +36,11 @@ class DashboardController extends Controller
             'Luar Daerah',
         ];
 
-        // Query dasar KPI dengan filter aktif
+        // Query dasar KPI dengan filter aktif (Hanya Waktu dan Lokasi)
         $baseQuery = KejadianKebakaran::verifiedOnly()
             ->whereYear('tanggal_waktu_kejadian', $tahun)
             ->when($bulan, fn($q) => $q->whereMonth('tanggal_waktu_kejadian', $bulan))
             ->when($kecamatanId, fn($q) => $q->where('kecamatan_id', $kecamatanId))
-            ->when($kategoriObjekId, fn($q) => $q->where('kategori_objek_id', $kategoriObjekId))
-            ->when($kategoriPenyebabId, fn($q) => $q->where('kategori_penyebab_id', $kategoriPenyebabId))
             ->when($zonaLayanan && $zonaLayanan !== 'Semua', function($q) use ($zonaLayanan) {
                 $q->whereHas('kecamatan', fn($kq) => $kq->where('zona_layanan', $zonaLayanan));
             });
